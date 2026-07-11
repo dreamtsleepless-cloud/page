@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>出生时间终极成分解码器</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(180deg, #0f0c1b 0%, #1a103c 50%, #0d0722 100%);
+            --card-bg: rgba(255, 255, 255, 0.07);
+            --card-border: rgba(255, 255, 255, 0.12);
+            --accent-color: #9d4edd;
+            --accent-glow: #e0aaff;
+            --text-main: #f3ecf9;
+            --text-muted: #b3a2c7;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px 15px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background: rgba(15, 10, 30, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid var(--card-border);
+            padding: 25px 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 标题与头部 */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            background: linear-gradient(135deg, #fff 30%, var(--accent-glow) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+
+        .header p {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* 表单区 */
+        .quiz-box {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: var(--accent-glow);
+            font-weight: bold;
+        }
+
+        /* 自定义下拉框样式适配手机 */
+        .select-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .select-wrapper::after {
+            content: '▼';
+            font-size: 12px;
+            color: var(--accent-glow);
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        select {
+            width: 100%;
+            padding: 14px 15px;
+            font-size: 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            color: #fff;
+            appearance: none;
+            -webkit-appearance: none;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        select:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 10px rgba(157, 78, 221, 0.3);
+        }
+
+        select option {
+            background: #1a103c;
+            color: #fff;
+        }
+
+        /* 按钮通用 */
+        .btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #7b2cbf 0%, #5a189a 100%);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(123, 44, 191, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+            filter: brightness(0.9);
+        }
+
+        /* 二次确认弹窗 */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(5, 3, 10, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal {
+            background: #1e1245;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 20px;
+            padding: 25px;
+            width: 100%;
+            max-width: 350px;
+            text-align: center;
+            animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes modalPop {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal h3 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            color: #ff9e00;
+        }
+
+        .modal p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .modal-btns {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-cancel {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            border: 1px solid var(--card-border);
+        }
+
+        .btn-confirm {
+            background: #ff9e00;
+            color: #000;
+        }
+
+        /* 加载动效 */
+        .loading-box {
+            display: none;
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top-color: var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s infinite linear;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 结果展示区 */
+        .result-box {
+            display: none;
+        }
+
+        .result-title {
+            text-align: center;
+            font-size: 20px;
+            color: #00f5d4;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed var(--card-border);
+        }
+
+        .dimension-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 15px;
+        }
+
+        .dimension-card h4 {
+            font-size: 15px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dim-1 h4 { color: #ff758f; }
+        .dim-2 h4 { color: #ffd166; }
+        .dim-3 h4 { color: #4cc9f0; }
+        .dim-4 h4 { color: #06d6a0; }
+
+        .dimension-card p {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #e0d5ed;
+            text-align: justify;
+        }
+
+        .restart-btn {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="quizPage" class="quiz-box">
+        <div class="header">
+            <h1>🔮 出生时间成分大解码</h1>
+            <p>你是否也曾好奇过：那些和你拥有相同“出生时间段”的人，究竟被宇宙刻下了怎样惊人相似的隐形出厂设置？</p>
+        </div>
+
+        <div class="form-group">
+            <label for="timeSelect">请选择你的精准出生时间：</label>
+            <div class="select-wrapper">
+                <select id="timeSelect">
+                    <option value="" disabled selected>-- 戳此点击选择时间 --</option>
+                    <option value="zi">23:00 - 01:00（子时）</option>
+                    <option value="chou">01:00 - 03:00（丑时）</option>
+                    <option value="yin">03:00 - 05:00（寅时）</option>
+                    <option value="mao">05:00 - 07:00（卯时）</option>
+                    <option value="chen">07:00 - 09:00（辰时）</option>
+                    <option value="si">09:00 - 11:00（巳时）</option>
+                    <option value="wu">11:00 - 13:00（午时）</option>
+                    <option value="wei">13:00 - 15:00（未时）</option>
+                    <option value="shen">15:00 - 17:00（申时）</option>
+                    <option value="you">17:00 - 19:00（酉时）</option>
+                    <option value="xu">19:00 - 21:00（戌时）</option>
+                    <option value="hai">21:00 - 23:00（亥时）</option>
+                </select>
+            </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="openConfirmModal()">⚡ 开启命运解码</button>
+    </div>
+
+    <div id="loadingPage" class="loading-box">
+        <div class="spinner"></div>
+        <p id="loadingText" style="color: var(--text-muted); font-size: 14px;">正在量子对齐古代星盘与现代神经科学...</p>
+    </div>
+
+    <div id="resultPage" class="result-box">
+        <div class="result-title" id="resTitle"></div>
+
+        <div class="dimension-card dim-1">
+            <h4>🧠 现代认知（当代人设）</h4>
+            <p id="resModern"></p>
+        </div>
+
+        <div class="dimension-card dim-2">
+            <h4>👥 群众认知（刻板印象）</h4>
+            <p id="resPublic"></p>
+        </div>
+
+        <div class="dimension-card dim-3">
+            <h4>📜 古代说法（玄学星盘）</h4>
+            <p id="resAncient"></p>
+        </div>
+
+        <div class="dimension-card dim-4">
+            <h4>🔬 实际上的科学研究与原因</h4>
+            <p id="resScience"></p>
+        </div>
+
+        <button class="btn restart-btn" onclick="restartQuiz()">↩️ 换个时间再测</button>
+    </div>
+</div>
+
+<div id="confirmModal" class="modal-overlay">
+    <div class="modal">
+        <h3>⚠️ 确认窥探天机？</h3>
+        <p>你即将解锁高维时空的人格底层逻辑！本次查询将直面血淋淋的科学现实与玄学宿命，你真的准备好面对真实的自己了吗？（非误触确认）</p>
+        <div class="modal-btns">
+            <button class="btn btn-cancel" onclick="closeConfirmModal()">让我想想</button>
+            <button class="btn btn-confirm" onclick="startAnalysis()">绝不后悔，查！</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 12时辰海量趣味趣味数据库
+    const database = {
+        zi: {
+            title: "🌙 子时（23:00 - 01:00）出生报告",
+            modern: "野生熬夜修仙总舵主，深夜灵感暴走狂。白天是莫得感情的生存机器，一过23点战斗力直接超级加倍，脑洞能开到外太空。",
+            public: "群众普遍认为你肯定是‘用最贵的眼霜，熬最深的夜’，自带一股高冷的神秘感，或者是朋友圈里最让人担心的肝帝。",
+            ancient: "子属水，水主智。古人云：子时出生者面冷心慈，机智过人。自带‘灵动之水’，往往擅长幕后筹谋，是个隐藏的智囊。",
+            science: "时生物学研究：此时是人体褪黑素分泌的高峰期。子时出生的人在婴儿期对夜间环境更敏感。部分表观遗传学认为，此时出生者可能携带更强的CLOCK晚睡基因变研，具有独特的深夜抗疲劳机制，但请注意保护头发。"
+        },
+        chou: {
+            title: "🐂 丑时（01:00 - 03:00）出生报告",
+            modern: "情绪稳定得像一尊石雕，内敛而擅长忍耐。内心戏明明已经演完了一部120集的连续剧，表面上依然只是淡淡地回一句：‘还行’。",
+            public: "大家都觉得你是个超级大倔驴，只要认准的事九头牛都拉不回来，靠谱、踏实，但有时候闷得让人想疯狂摇晃你的肩膀。",
+            ancient: "丑属土，为金库。古籍记载：丑时逢牛，为人脚踏实地，大器晚成。骨子里自带一股不服输的韧劲，属于典型‘闷声发大财’的命格。",
+            science: "现代昼夜节律学：凌晨1-3点是人类核心体温最低、深层睡眠最深的时刻。此时出生的婴儿经历了强烈的生理温度急剧变化切换，往往拥有极强的抗寒/抗极端环境能力，基础代谢调整力极好。"
+        },
+        yin: {
+            title: "🐅 寅时（03:00 - 05:00）出生报告",
+            modern: "自带‘天生霸总/大女主’气场。胜负欲强到了极致，连玩个飞行棋都要全盘掌控。性格里有着极强的破局能力，讨厌一成不变。",
+            public: "脾气有点像行走的炸药包，极度护短！虽然嘴上毒舌，但朋友被欺负时绝对第一个冲上去掀桌子，执行力爆表。",
+            ancient: "寅属木，代表黎明前的初生之火。古称‘广谷’，此生多具统帅之姿，性格刚毅不阿，喜迎挑战，是不折不扣的开拓型人才。",
+            science: "时间生物学发现：清晨3点到5点，人体的皮质醇（压力/觉醒荷尔蒙）开始悄悄加速分泌，为苏醒做准备。因此，该时段出生的人天生对外界环境的刺激反应敏锐，危机意识极强，行动速度往往快于常人。"
+        },
+        mao: {
+            title: "🐇 卯时（05:00 - 07:00）出生报告",
+            modern: "人间顶级治愈系，阳光干净，温柔中带着极其恐怖的原则性。看似人畜无害，其实谁也别想白嫖你或者道德绑架你。",
+            public: "慢热、精致、生活极具仪式感，大家都觉得你是个向往诗和远方的文艺青年，极度追求人际关系的和谐与美感。",
+            ancient: "卯为日出，玉兔东升。古代命理认为此生人缘极佳，自带‘天禧桃花’。贵人运爆棚，总能在关键时刻逢凶化吉。",
+            science: "光基因生物学：清晨5-7点太阳升起，晨光会透过母亲腹壁对胎儿生物钟进行最初的光觉醒。科学统计显示，该时段出生的人成为‘百灵鸟型’（早起型）人格的概率显著增高，自律性和清晨工作效率普遍拔尖。"
+        },
+        chen: {
+            title: "🐉 辰时（07:00 - 09:00）出生报告",
+            modern: "天选乐天派，社交圈的锦鲤Buff叠加者。热衷于各种新鲜事物，妥妥的社牛分子，能把枯燥的生活过出一种随时要蹦迪的幽默感。",
+            public: "极其爱面子，喜欢成为视线的焦点。花钱极其大方，经常因为‘千金难买我乐意’而导致钱包月底发出悲鸣。",
+            ancient: "辰为变幻之龙，属土。古书称：辰时生人，聪明多才，一生多变动，但每一步变动都在往更高的阶梯跃升，生命力极度旺盛。",
+            science: "生理学机制：上午7-9点是人体胃经当令、新陈代谢全面复苏的时刻。临床追踪显示，辰时出生的人其消化系统和能量转化效率往往更加活跃，只要规律作息，天生具备更高的活力上限与续航能力。"
+        },
+        si: {
+            title: "🐍 巳时（09:00 - 11:00）出生报告",
+            modern: "高智商冷酷脸拥有者，逻辑怪，细节抓取大师。思维敏捷得像开了倍速，最讨厌别人说话没有逻辑或者磨磨唧唧。",
+            public: "占有欲和吃醋能力属于宇宙天花板级别！一旦谈恋爱或者对好朋友，内心就像装了雷达一样，极度敏感且爱吃闷醋。",
+            ancient: "巳属火，为大驿。古人认为巳时出生者‘思维如蛇之敏捷，顺势而为’。极擅长在复杂的人际或商业环境中找到最佳捷径。"
+            ,science: "神经科学数据：上午9-11点是人体血液循环的高峰期，大脑供氧量达到全天的黄金段。科学研究表明，这个时期的婴儿在发育中，往往展现出极佳的早期视觉聚焦与专注力基因表现。"
+        },
+        wu: {
+            title: "🐎 午时（11:00 - 13:00）出生报告",
+            modern: "热情如火，直肠子，情绪来得快去得更快。典型的‘三分钟热度’，虽然经常放弃，但架不住你尝试的新事物比别人多十倍！",
+            public: "没心没肺的快乐源泉，傻白甜或者直脑筋。大家都觉得你毫无心机，喜怒哀乐全写在脸上，极好相处。",
+            ancient: "午为正阳，如日中天。古代命理极推崇午时生人，认为其性格慷慨，正气凛然，具有极强的威望与感染力，利官利贵。",
+            science: "表观遗传学：中午11-13点是太阳辐射与环境光照最强烈的阶段。部分跨地区统计表明，在强光照时段出生的个体，其体内多巴胺受体的敏感度较独特，对‘季节性情绪波动’（SAD）的免疫力极高，天生自带抗抑郁属性。"
+        },
+        wei: {
+            title: "🐑 未时（13:00 - 15:00）出生报告",
+            modern: "浑身散发着高雅艺术气息的文艺青年。精神世界极其广袤丰富，是个超级‘细节控’和‘重度唯心主义者’。",
+            public: "间歇性雄心壮志，持续性混吃等死（爱躺平）。大家总觉得你有点懒洋洋的，生活节奏慢半拍，是个典型的和平主义者。",
+            ancient: "未属土，为花园之土。古云：未时生人，外柔内刚，福气绵长。虽然不爱出风头，但往往能通过细水长流的方式获得最终的成功。",
+            science: "人体生理学：下午1-3点是俗称的‘午后低谷期’，人体消化系统分流血液，大脑活跃度产生周期性下降。此时出生的人，神经系统对‘疲劳信号’的捕捉更敏感，因此他们更懂得如何进行科学的劳逸结合与自我心理解压。"
+        },
+        shen: {
+            title: "🐒 申时（15:00 - 17:00）出生报告",
+            modern: "当代幽默大师，谐音梗之王。社交圈里的绝对润滑剂，有你在的地方永远不会冷场，擅长用最轻描淡写的话把大家逗得前仰后合。",
+            public: "屁股上长了钉子，根本坐不住！喜欢到处乱晃，永远在寻找生活里新鲜好玩刺激的乐子，好奇心重得像猫。",
+            ancient: "申属金，为名都，代表敏捷多变。古籍记载：申时出生者机灵敏锐，能言善辩。靠一张嘴和敏捷的反应就能在社会上混得风生水起。",
+            science: "运动生理学：下午3点到5点，人类的体温达到下午的高峰，肌肉力量、心肺功能及身体协调性处于一天的巅峰。此时出生的人，其身体运动机能的先天激活阈值较低，往往拥有更好的空间感知力与身体协调天赋。"
+        },
+        you: {
+            title: "🐓 酉时（17:00 - 19:00）出生报告",
+            modern: "强迫症晚期患者，审美能力极高的潮流弄潮儿。对生活的质感和外在的穿搭有种近乎偏执的追求，无法忍受任何粗制滥造。",
+            public: "嘴硬心软的傲娇怪天花板！表面上嫌弃你嫌弃得要死，背地里却默默把你的问题全顺手帮着解决了，妥妥的闷骚性格。",
+            ancient: "酉为黄昏，金乌西坠。古人认为此时间段代表‘收获与富足’。酉时出生者衣禄无忧，审美与艺术天赋极高，常能在手工艺或创意领域发光。"
+            ,science: "昼夜交替演变学：傍晚17-19点是昼夜交替的临界点，人体基础体温达到最高峰。此时出生的个体对环境光线变化的神经适应极其剧烈，这也造就了他们对色彩、环境氛围、细节变动具备极度敏锐的直觉洞察力。"
+        },
+        xu: {
+            title: "🐕 戌时（19:00 - 21:00）出生报告",
+            modern: "靠得住的孤勇者。防备心极重，很难真正走进你的内心；但一旦被你划入‘自己人’的领地，你就会护短、仗义到极致。",
+            public: "重度宅男/宅女。重度手机依赖，一回家就想把门反锁。虽然表面上看着跟谁都客客气气的，但其实内心极其渴望绝对的边界感。",
+            ancient: "戌为万物归藏，属土。古书云：戌时生人，忠诚正直，沉稳大器。遇事不慌，具备极强的抗压能力和守护家庭、事业的财富大格。",
+            science: "神经生物学：晚上19-21点，光线彻底变暗，人体开始启动褪黑素的初始分泌，神经系统由兴奋转入抑制。此时出生的人，大脑的‘深度思考回路’往往更容易在安静环境中被激活，擅长内省与深度复盘。"
+        },
+        hai: {
+            title: "🐖 亥时（21:00 - 23:00）出生报告",
+            modern: "治愈系天花板，大智若愚的终极代表。间歇性看破红尘想出家，持续性享受人间的火锅和烧烤。天塌下来，你也能先睡个好觉再说。",
+            public: "是个不折不扣的隐藏吃货加‘懒癌末期’。大家都羡慕你那种随遇而安、天塌不惊的松弛感，感觉你身上有一股神奇的治愈力。",
+            ancient: "亥属水，为百川汇海。古人认为：亥时是万物休养生息之时，此时出生的人一生衣食无忧，福泽深厚，属于非常有后福的‘福星’命格。",
+            science: "免疫与细胞学：深夜21-23点是人体淋巴免疫系统进入全面排毒与自我修复的预备期。医学数据表明，亥时出生的个体在幼年时期的免疫应答机制通常较为平稳，这也赋予了他们成年后更强大的情绪自愈力和心理‘免疫防护墙’。"
+        }
+    };
+
+    function openConfirmModal() {
+        const select = document.getElementById('timeSelect');
+        if (!select.value) {
+            alert("🔮 宇宙提示：请先选择您的出生时间段！");
+            return;
+        }
+        document.getElementById('confirmModal').style.display = 'flex';
+    }
+
+    function closeConfirmModal() {
+        document.getElementById('confirmModal').style.display = 'none';
+    }
+
+    function startAnalysis() {
+        closeConfirmModal();
+        
+        // 隐藏问卷，显示加载
+        document.getElementById('quizPage').style.display = 'none';
+        document.getElementById('loadingPage').style.display = 'block';
+
+        const loadingTexts = [
+            "正在对接现代时钟生物学基因库...",
+            "正在扫描古代星盘及12地支轨迹...",
+            "正在提取群众刻板印象大数据...",
+            "正在生成您的终极解码报告..."
+        ];
+
+        let textIndex = 0;
+        const interval = setInterval(() => {
+            if (textIndex < loadingTexts.length) {
+                document.getElementById('loadingText').innerText = loadingTexts[textIndex];
+                textIndex++;
+            }
+        }, 400);
+
+        // 1.6秒后展示结果
+        setTimeout(() => {
+            clearInterval(interval);
+            showResult();
+        }, 1600);
+    }
+
+    function showResult() {
+        const select = document.getElementById('timeSelect');
+        const data = database[select.value];
+
+        // 填充数据
+        document.getElementById('resTitle').innerText = data.title;
+        document.getElementById('resModern').innerText = data.modern;
+        document.getElementById('resPublic').innerText = data.public;
+        document.getElementById('resAncient').innerText = data.ancient;
+        document.getElementById('resScience').innerText = data.science;
+
+        // 切换页面
+        document.getElementById('loadingPage').style.display = 'none';
+        document.getElementById('resultPage').style.display = 'block';
+        
+        // 滚动到顶部
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function restartQuiz() {
+        // 重置下拉框
+        document.getElementById('timeSelect').selectedIndex = 0;
+        // 切换回主页
+        document.getElementById('resultPage').style.display = 'none';
+        document.getElementById('quizPage').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
