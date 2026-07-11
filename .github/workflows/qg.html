@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>探索你的情感依恋剧本 - 成人依恋类型心理学评测</title>
+    <style>
+        /* --- 全局样式与现代疗愈色系配置 --- */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #f5f3ef 0%, #e6e1da 100%);
+            --card-bg: rgba(255, 255, 255, 0.88);
+            --primary-color: #7d9385; /* 莫兰迪鼠尾草绿 */
+            --primary-hover: #697d70;
+            --accent-color: #b5988a;  /* 莫兰迪烟粉/暖暮色 */
+            --text-main: #3d3b37;
+            --text-muted: #706d66;
+            --border-color: rgba(224, 218, 209, 0.6);
+            --shadow-sm: 0 4px 12px rgba(143, 134, 120, 0.05);
+            --shadow-md: 0 12px 30px rgba(143, 134, 120, 0.1);
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            --transition-smooth: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans CJK SC", sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        #app {
+            width: 100%;
+            max-width: 680px;
+            min-height: 520px;
+            position: relative;
+        }
+
+        /* --- 基础卡片容器 --- */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: var(--radius-lg);
+            padding: 45px 40px;
+            box-shadow: var(--shadow-md);
+            opacity: 0;
+            transform: translateY(20px);
+            display: none;
+            transition: var(--transition-smooth);
+        }
+
+        .card.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- 动画效果 --- */
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 0 0 rgba(125, 147, 133, 0.4); }
+            70% { box-shadow: 0 0 0 12px rgba(125, 147, 133, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(125, 147, 133, 0); }
+        }
+
+        @keyframes waveLoading {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* --- 1. 首页样式 --- */
+        .home-container {
+            text-align: center;
+        }
+
+        .home-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            background: rgba(125, 147, 133, 0.12);
+            color: var(--primary-color);
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 24px;
+        }
+
+        .home-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            line-height: 1.4;
+            color: #2b2926;
+            margin-bottom: 20px;
+            letter-spacing: -0.5px;
+        }
+
+        .home-description {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: #ffffff;
+            border: none;
+            padding: 16px 38px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            box-shadow: 0 6px 20px rgba(125, 147, 133, 0.25);
+            animation: pulseGlow 2.5s infinite;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(125, 147, 133, 0.35);
+        }
+
+        .btn-primary:active {
+            transform: translateY(1px);
+        }
+
+        /* --- 2. 测试页样式 --- */
+        .quiz-header {
+            margin-bottom: 35px;
+        }
+
+        .progress-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .progress-text {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 6px;
+            background: rgba(125, 147, 133, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            border-radius: 10px;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            font-weight: 600;
+            line-height: 1.5;
+            color: #2b2926;
+            margin-bottom: 35px;
+            min-height: 70px;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .option-item {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 18px 24px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .option-item:hover {
+            border-color: var(--primary-color);
+            background: rgba(125, 147, 133, 0.03);
+            transform: translateX(4px);
+        }
+
+        .option-item.selected {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: #ffffff;
+        }
+
+        .quiz-footer {
+            margin-top: 30px;
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0,0,0,0.03);
+            color: var(--text-main);
+        }
+
+        /* --- 3. 载入页样式 --- */
+        .loading-container {
+            text-align: center;
+            padding: 60px 0;
+        }
+
+        .loading-waves {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 25px;
+        }
+
+        .wave-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            animation: waveLoading 1.2s infinite ease-in-out;
+        }
+
+        .wave-dot:nth-child(2) { animation-delay: 0.2s; background: #9bb0a3; }
+        .wave-dot:nth-child(3) { animation-delay: 0.4s; background: var(--accent-color); }
+
+        .loading-text {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        /* --- 4. 结果页样式 --- */
+        .result-header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .result-subtitle {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .result-title {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: #2b2926;
+            margin: 10px 0 15px 0;
+        }
+
+        /* 二维象限图 */
+        .chart-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 35px 0;
+        }
+
+        .axis-wrapper {
+            width: 260px;
+            height: 260px;
+            border: 2px solid var(--border-color);
+            position: relative;
+            background: #ffffff;
+            border-radius: 4px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .axis-line-x {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: #cbd2cc;
+        }
+
+        .axis-line-y {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 1px;
+            height: 100%;
+            background: #cbd2cc;
+        }
+
+        .axis-label {
+            position: absolute;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: bold;
+        }
+        .label-top { top: -22px; left: 50%; transform: translateX(-50%); }
+        .label-bottom { bottom: -22px; left: 50%; transform: translateX(-50%); }
+        .label-left { left: -45px; top: 50%; transform: translateY(-50%); }
+        .label-right { right: -45px; top: 50%; transform: translateY(-50%); }
+
+        .quadrant-tag {
+            position: absolute;
+            font-size: 0.7rem;
+            color: #b0aba2;
+            pointer-events: none;
+        }
+        .tag-tl { top: 10px; left: 10px; }
+        .tag-tr { top: 10px; right: 10px; }
+        .tag-bl { bottom: 10px; left: 10px; }
+        .tag-br { bottom: 10px; right: 10px; }
+
+        .score-dot {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: var(--accent-color);
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            transform: translate(-50%, 50%); /* 修正绝对定位原点偏移 */
+            box-shadow: 0 0 12px rgba(181, 152, 138, 0.8);
+            transition: all 1s cubic-bezier(0.25, 1, 0.5, 1);
+            bottom: 50%;
+            left: 50%;
+        }
+
+        /* 结果解析板块结构 */
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, rgba(224,218,209,0) 0%, rgba(224,218,209,1) 50%, rgba(224,218,209,0) 100%);
+            margin: 35px 0;
+        }
+
+        .insight-section {
+            margin-bottom: 28px;
+        }
+
+        .section-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .section-icon {
+            width: 6px;
+            height: 18px;
+            background: var(--primary-color);
+            border-radius: 3px;
+        }
+        .insight-section:nth-of-type(2) .section-icon {
+            background: var(--accent-color);
+        }
+
+        .section-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #2b2926;
+        }
+
+        .insight-card {
+            background: rgba(255, 255, 255, 0.5);
+            border-left: 3px solid var(--primary-color);
+            padding: 16px 20px;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            font-size: 0.98rem;
+            line-height: 1.65;
+            color: var(--text-main);
+            margin-bottom: 12px;
+        }
+        .insight-section:nth-of-type(2) .insight-card {
+            border-left-color: var(--accent-color);
+        }
+
+        .advice-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .advice-item {
+            position: relative;
+            padding-left: 24px;
+            font-size: 0.98rem;
+            line-height: 1.6;
+            color: var(--text-main);
+        }
+
+        .advice-item::before {
+            content: "✦";
+            position: absolute;
+            left: 4px;
+            color: var(--accent-color);
+            font-size: 0.9rem;
+        }
+
+        .empowerment-box {
+            background: rgba(125, 147, 133, 0.06);
+            border: 1px dashed var(--primary-color);
+            border-radius: var(--radius-md);
+            padding: 22px 24px;
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .empowerment-text {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #38423b;
+            font-style: italic;
+        }
+
+        .result-actions {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        /* --- 5. 响应式适配 --- */
+        @media (max-width: 600px) {
+            body { padding: 12px; }
+            .card { padding: 30px 20px; }
+            .home-title { font-size: 1.75rem; }
+            .question-text { font-size: 1.15rem; }
+            .option-item { padding: 15px 18px; font-size: 0.95rem; }
+            .result-title { font-size: 1.9rem; }
+            .axis-wrapper { width: 220px; height: 220px; }
+            .label-left { left: -38px; font-size: 0.7rem; }
+            .label-right { right: -38px; font-size: 0.7rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <div id="home-screen" class="card active">
+        <div class="home-container">
+            <span class="home-badge">Bowlby & Ainsworth 依恋理论模型</span>
+            <h1 class="home-title">解开你在亲密关系中的<br>“隐形剧本”</h1>
+            <p class="home-description">
+                为什么我们总是在重复相同的伤害与渴望？本测验将基于心理学经典的“焦虑”与“回避”双维度模型，探寻你内心深处尚未察觉的防御机制，为你推演一份走向“获得性安全”的深度行动指南。
+            </p>
+            <button class="btn-primary" onclick="App.startQuiz()">开启探索之旅</button>
+        </div>
+    </div>
+
+    <div id="quiz-screen" class="card">
+        <div class="quiz-header">
+            <div class="progress-container">
+                <span class="progress-text" id="progress-text">问题 1 / 12</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progress-bar-fill"></div>
+            </div>
+        </div>
+        <div class="question-text" id="question-text">正在加载情境...</div>
+        <div class="options-list" id="options-list">
+            </div>
+        <div class="quiz-footer">
+            <button class="btn-secondary" id="btn-back" onclick="App.prevQuestion()">返回上一题</button>
+        </div>
+    </div>
+
+    <div id="loading-screen" class="card">
+        <div class="loading-container">
+            <div class="loading-waves">
+                <div class="wave-dot"></div>
+                <div class="wave-dot"></div>
+                <div class="wave-dot"></div>
+            </div>
+            <p class="loading-text">正在梳理你的潜意识情感脉络...</p>
+        </div>
+    </div>
+
+    <div id="result-screen" class="card">
+        <div class="result-header">
+            <span class="result-subtitle">你的情感依恋坐标</span>
+            <h2 class="result-title" id="result-type-title">安全型依恋</h2>
+        </div>
+
+        <div class="chart-container">
+            <div class="axis-wrapper">
+                <div class="quadrant-tag tag-tl">焦虑型</div>
+                <div class="quadrant-tag tag-tr">恐惧型</div>
+                <div class="quadrant-tag tag-bl">安全型</div>
+                <div class="quadrant-tag tag-br">疏离型</div>
+                <div class="axis-line-x"></div>
+                <div class="axis-line-y"></div>
+                <div class="axis-label label-top">高焦虑 (Anxiety)</div>
+                <div class="axis-label label-bottom">低焦虑</div>
+                <div class="axis-label label-left">高回避</div>
+                <div class="axis-label label-right">低回避</div>
+                <div class="score-dot" id="score-dot"></div>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <div class="insight-section">
+            <div class="section-title-wrapper">
+                <div class="section-icon"></div>
+                <h3 class="section-title">反直觉的底层真相</h3>
+            </div>
+            <div id="insight-container">
+                </div>
+        </div>
+
+        <div class="insight-section">
+            <div class="section-title-wrapper">
+                <div class="section-icon"></div>
+                <h3 class="section-title">今晚即可付诸行动的指南</h3>
+            </div>
+            <ul class="advice-list" id="advice-container">
+                </ul>
+        </div>
+
+        <div class="empowerment-box">
+            <p class="empowerment-text" id="empowerment-text">
+                依恋类型绝不是宿命。它是你过去为了保护自己而铸就的勋章。当当下的环境变安全时，你的内心同样拥有重新流向安全型的生机。
+            </p>
+        </div>
+
+        <div class="result-actions">
+            <button class="btn-secondary" onclick="App.restart()">重新测评</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    /**
+     * 精选12道高区分度去防卫心理题库
+     * 维度说明: 'anxiety' (焦虑维), 'avoidance' (回避维)
+     * 计分: 选项权重自 0 至 3 渐进增高
+     */
+    const questions = [
+        {
+            id: 1,
+            dimension: 'anxiety',
+            text: "当重要的人回消息的速度明显变慢时，我容易下意识地反思自己刚刚是不是说错了什么。",
+        },
+        {
+            id: 2,
+            dimension: 'avoidance',
+            text: "当别人向我吐露极度亲密、脆弱或带有强烈依赖性的心声时，我的第一反应常常是本能地想退缩或转移话题。",
+        },
+        {
+            id: 3,
+            dimension: 'anxiety',
+            text: "我常常渴望和伴侣建立毫无保留的深度亲密，但又时刻暗自担心对方并不像我一样渴望这种交融。",
+        },
+        {
+            id: 4,
+            dimension: 'avoidance',
+            text: "在面对高压或挫折时，我更习惯自己一个人消化解决，而不是向伴侣或身边的人寻求情感上的依靠。",
+        },
+        {
+            id: 5,
+            dimension: 'anxiety',
+            text: "在恋爱或深层交往中，我常常需要通过对方持续的肯定、温存或明确的爱意表达，才能确信关系依然稳固。",
+        },
+        {
+            id: 6,
+            dimension: 'avoidance',
+            text: "如果一段关系发展得太快、太黏腻，我会本能地产生一种窒息感，并下意识想要拉开距离以确保安全。",
+        },
+        {
+            id: 7,
+            dimension: 'anxiety',
+            text: "当感觉到关系有些许冷淡或异样时，我的情绪波动会非常明显，很难集中精力去做好手头的其他事情。",
+        },
+        {
+            id: 8,
+            dimension: 'avoidance',
+            text: "我认为在精神和现实生活里保持彻底的独立，比完全信任并依赖另一个人要安全得多。",
+        },
+        {
+            id: 9,
+            dimension: 'anxiety',
+            text: "我有时会因为害怕被抛弃，而故意表现出冷淡或佯装生气，以此来测试对方是否真的还在乎我。",
+        },
+        {
+            id: 10,
+            dimension: 'avoidance',
+            text: "我很难直接且毫无防备地向伴侣表达内心的脆弱、无助以及对他的渴望和需要。",
+        },
+        {
+            id: 11,
+            dimension: 'anxiety',
+            text: "即使在关系很好的时期，我也很难完全遏制住去担心“自己最终会被留下或失去这段珍贵关系”的念头。",
+        },
+        {
+            id: 12,
+            dimension: 'avoidance',
+            text: "当对方想要深入讨论情感矛盾或冲突时，我倾向于理性地讲道理或者保持沉默，从而建立起一道情绪屏障。",
+        }
+    ];
+
+    const optionsTemplate = [
+        { text: "完全不符合", weight: 0 },
+        { text: "较少符合", weight: 1 },
+        { text: "较多符合", weight: 2 },
+        { text: "完全符合", weight: 3 }
+    ];
+
+    /**
+     * 四大核心依恋类型报告数据库
+     */
+    const resultsData = {
+        'secure': {
+            title: "煦日港湾 · 安全型依恋",
+            insights: [
+                "安全型并非对情感伤害完全免疫，也绝不是没有情绪波动。本质上，是你们的大脑中内置了一个高效运转的『情绪翻译器』，能够在感知到不安的瞬间，迅速将其转化为建设性的坦诚沟通。",
+                "你对他人的信任，并不代表你天真，而是因为你拥有足够的内核，去承受可能出现的拒绝与不确定性。"
+            ],
+            advice: [
+                "保持对非安全型伴侣的共情，但也要敏锐识别对方由于防御机制导致的推开或抓紧，设立健康的边界。",
+                "当伴侣陷入回避或焦虑状态时，做关系的稳定器，但不必承担对方的所有情绪课题——课题分离会让你更有力量。"
+            ],
+            empowerment: "你的内在拥有一座稳固的灯塔。继续带着你的松弛、坦诚与边界感，在这个充满防御的世界里，去自由地爱与被爱吧。"
+        },
+        'anxious': {
+            title: "敏感雷达 · 焦虑型依恋",
+            insights: [
+                "在进化心理学中，你的『过度敏感』往往是一种被低估的天赋。你能在复杂的人际与职场环境中，转化为极高的同理心和超强的危机洞察力。你对细微情绪的捕捉，实际上是一项未被正确使用的能力。",
+                "你的高焦虑抓紧，其实不是因为你太贪婪，而是你在用童年习得的『放大痛苦信号』的方式，来拼命确保重要的人不会离开你。"
+            ],
+            advice: [
+                "启动『5分钟情绪隔离缓冲』：当对方没有及时回复信息时，深呼吸五分钟，期间不刷新手机，转而去做一件让自己感到快乐的绝对独立的小事。",
+                "练习『直白的需求翻译』：把‘你为什么总是不理我？（攻击行为）’翻译为真正的内心脆弱：‘我现在有点孤单，需要你抱抱我’。直接索要爱，而不是通过测试和愤怒来拉扯关系。"
+            ],
+            empowerment: "你的敏感从来不是软弱，而是你过去为了不错过爱而建立的精精密雷达。请试着对自己说：不用时刻紧绷、不用那么完美和听话，你本来就完全配得上被稳妥且温柔地爱着。"
+        },
+        'dismissive': {
+            title: "独立城堡 · 疏离/回避型依恋",
+            insights: [
+                "你的冷漠、无所谓和『我不需要任何人』，在心理学上往往是一种高阶的防卫。你的内心极度渴望深层亲密，正因其太诱人也太容易带来伤害，你才筑起城堡。渴望与抽离，在你的潜意识深处其实是同一种风暴。",
+                "你的绝对独立并非天生，通常是因为在生命早期，你发现呼唤爱意可能换来的是失望或惩罚，于是你理智地决定做自己的父母。"
+            ],
+            advice: [
+                "尝试『低情感成本表达』：当你面对面沟通感到窒息想要逃跑时，不需要强迫硬撑。可以用一条文字信息告知：‘我现在状态有点混乱，需要独处一小时消化，但这绝不是你的错。’",
+                "每天允许自己去『依靠』他人一件极其微小的事。比如让伴侣顺路带杯咖啡，或者让朋友推荐一首歌。逐渐解冻‘依赖他人等于交出主权’的创伤潜意识。"
+            ],
+            empowerment: "城堡虽然坚固安全，但也同样阻挡了阳光的直射。那个在过去保护你长大的坚硬外壳，如今长大的你，已经有能力试着敲开一道缝隙了。外面的世界，其实没有你想象的那么危险。"
+        },
+        'fearful': {
+            title: "荆棘玫瑰 · 恐惧/矛盾型依恋",
+            insights: [
+                "在『极度渴望』与『本能推开』之间反复拉扯，这是一种极其消耗能量的体验。但这代表着你对情感的纯粹度有着惊人的追求。你的两极化不是古怪，而是你的大脑在同时运行着焦虑型的雷达与回避型的城堡。",
+                "你的愤怒或推开行为，潜意识台词其实是：‘如果你在看到我这么糟糕、带刺的一面后还没有逃跑，我才能真正相信你是安全的。’"
+            ],
+            advice: [
+                "建立『关系暂停机制』：当内心剧烈震荡、既想大闹又想拉黑对方消失时，明确对自己说：‘我此刻的恐惧是童年阴影的幻像，现在的我是安全的。’然后按下暂停键20分钟。",
+                "寻找一个具有极高容器感的环境或安全型朋友进行稳定交往，在一次次‘试探-未被惩罚-被接纳’的闭环中重建对世界的信任。"
+            ],
+            empowerment: "你就像一朵带刺的玫瑰，用刺对抗对未知的恐惧，用花瓣呼唤着真正的理解。你经历了最复杂的拉扯，正因如此，你一旦走向整合，便能爆发出极其深刻、丰满且富有治愈力的内在情感厚度。"
+        }
+    };
+
+    /**
+     * 全栈前端全交互核心逻辑控制层
+     */
+    const App = {
+        currentIdx: 0,
+        userAnswers: [], // 存储每题选择的权重
+
+        // 各种 DOM 节点的缓存
+        screens: {
+            home: document.getElementById('home-screen'),
+            quiz: document.getElementById('quiz-screen'),
+            loading: document.getElementById('loading-screen'),
+            result: document.getElementById('result-screen')
+        },
+
+        init() {
+            // 预加载或重置状态
+            this.currentIdx = 0;
+            this.userAnswers = [];
+        },
+
+        switchScreen(targetScreen) {
+            Object.values(this.screens).forEach(scr => {
+                scr.classList.remove('active');
+            });
+            targetScreen.classList.add('active');
+        },
+
+        startQuiz() {
+            this.init();
+            this.switchScreen(this.screens.quiz);
+            this.renderQuestion();
+        },
+
+        renderQuestion() {
+            const q = questions[this.currentIdx];
+            
+            // 进阶进度条计算
+            const progressPercent = ((this.currentIdx + 1) / questions.length) * 100;
+            document.getElementById('progress-bar-fill').style.width = `${progressPercent}%`;
+            document.getElementById('progress-text').innerText = `问题 ${this.currentIdx + 1} / ${questions.length}`;
+            
+            // 渲染题干
+            document.getElementById('question-text').innerText = q.text;
+
+            // 处理返回按钮的显隐
+            const backBtn = document.getElementById('btn-back');
+            if (this.currentIdx === 0) {
+                backBtn.style.visibility = 'hidden';
+            } else {
+                backBtn.style.visibility = 'visible';
+            }
+
+            // 渲染选项列表
+            const optionsList = document.getElementById('options-list');
+            optionsList.innerHTML = '';
+            
+            optionsTemplate.forEach(opt => {
+                const optItem = document.createElement('div');
+                optItem.className = 'option-item';
+                
+                // 检查用户是否之前选过这道题（用于返回修改时高亮显示）
+                if (this.userAnswers[this.currentIdx] !== undefined && this.userAnswers[this.currentIdx].weight === opt.weight) {
+                    optItem.classList.add('selected');
+                }
+
+                optItem.innerHTML = `<span>${opt.text}</span>`;
+                optItem.onclick = () => this.selectOption(opt.weight);
+                optionsList.appendChild(optItem);
+            });
+        },
+
+        selectOption(weight) {
+            // 保存当前题目的权重和维度
+            const currentQ = questions[this.currentIdx];
+            this.userAnswers[this.currentIdx] = {
+                dimension: currentQ.dimension,
+                weight: weight
+            };
+
+            // 丝滑动效反馈：给选中的元素加上 selected 样式
+            const items = document.querySelectorAll('.option-item');
+            items.forEach((item, idx) => {
+                if(optionsTemplate[idx].weight === weight){
+                    item.classList.add('selected');
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
+
+            // 延迟 280ms 切换，让用户看清点击反馈
+            setTimeout(() => {
+                if (this.currentIdx < questions.length - 1) {
+                    this.currentIdx++;
+                    this.renderQuestion();
+                } else {
+                    this.processResults();
+                }
+            }, 280);
+        },
+
+        prevQuestion() {
+            if (this.currentIdx > 0) {
+                this.currentIdx--;
+                this.renderQuestion();
+            }
+        },
+
+        processResults() {
+            this.switchScreen(this.screens.loading);
+
+            // 制造 1.8 秒的心理学测算等待期，提升用户对报告科学性的感知质量 (Value Perception)
+            setTimeout(() => {
+                this.calculateScoreAndShow();
+            }, 1800);
+        },
+
+        calculateScoreAndShow() {
+            let totalAnxiety = 0;
+            let totalAvoidance = 0;
+            let maxAnxietyPossible = 0;
+            let maxAvoidancePossible = 0;
+
+            this.userAnswers.forEach(ans => {
+                if (ans.dimension === 'anxiety') {
+                    totalAnxiety += ans.weight;
+                    maxAnxietyPossible += 3;
+                } else if (ans.dimension === 'avoidance') {
+                    totalAvoidance += ans.weight;
+                    maxAvoidancePossible += 3;
+                }
+            });
+
+            // 计算轴向得分率 (0 到 1 之间)
+            const ratioAnxiety = totalAnxiety / maxAnxietyPossible;
+            const ratioAvoidance = totalAvoidance / maxAvoidancePossible;
+
+            // 科学中位线切分点（以 0.5 作为高低的划分基准线）
+            const threshold = 0.5;
+            let type = 'secure';
+
+            if (ratioAnxiety < threshold && ratioAvoidance < threshold) {
+                type = 'secure';
+            } else if (ratioAnxiety >= threshold && ratioAvoidance < threshold) {
+                type = 'anxious';
+            } else if (ratioAnxiety < threshold && ratioAvoidance >= threshold) {
+                type = 'dismissive';
+            } else if (ratioAnxiety >= threshold && ratioAvoidance >= threshold) {
+                type = 'fearful';
+            }
+
+            const data = resultsData[type];
+
+            // 动态填入报告内容
+            document.getElementById('result-type-title').innerText = data.title;
+
+            // 反直觉真相
+            const insightBox = document.getElementById('insight-container');
+            insightBox.innerHTML = '';
+            data.insights.forEach(ins => {
+                const div = document.createElement('div');
+                div.className = 'insight-card';
+                div.innerText = ins;
+                insightBox.appendChild(div);
+            });
+
+            // 行动指南
+            const adviceBox = document.getElementById('advice-container');
+            adviceBox.innerHTML = '';
+            data.advice.forEach(adv => {
+                const li = document.createElement('li');
+                li.className = 'advice-item';
+                li.innerText = adv;
+                adviceBox.appendChild(li);
+            });
+
+            document.getElementById('empowerment-text').innerText = data.empowerment;
+
+            // 渲染坐标系上的小圆点位置
+            // X轴为回避度，左边高回避，右边低回避。坐标轴中点为50%，向右是低，向左是高。
+            // 故：left百分比 = 50% + (0.5 - ratioAvoidance) * 100% * 0.8 (加入0.8缩放防止贴边)
+            // Y轴为焦虑度，上方高焦虑，下方低焦虑。坐标轴中点为50%，向上是高，向下是低。
+            // 故：bottom百分比 = 50% + (ratioAnxiety - 0.5) * 100% * 0.8
+            
+            const leftPos = 50 + (0.5 - ratioAvoidance) * 80;
+            const bottomPos = 50 + (ratioAnxiety - 0.5) * 80;
+
+            this.switchScreen(this.screens.result);
+
+            // 触发丝滑的坐标动画
+            setTimeout(() => {
+                const dot = document.getElementById('score-dot');
+                dot.style.left = `${leftPos}%`;
+                dot.style.bottom = `${bottomPos}%`;
+            }, 100);
+        },
+
+        restart() {
+            this.init();
+            this.switchScreen(this.screens.home);
+        }
+    };
+</script>
+
+</body>
+</html>
