@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Scale - 宇宙尺度渐变缩放（感官震撼版）</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #020208;
+            font-family: 'Courier New', Courier, monospace, system-ui;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        
+        /* 科技感 HUD 界面 */
+        #hud-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 10;
+            pointer-events: none;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            color: rgba(255, 255, 255, 0.85);
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        .hud-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .telemetry h1 {
+            font-size: 1.8rem;
+            letter-spacing: 4px;
+            color: #00e5ff;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .telemetry p {
+            font-size: 0.9rem;
+            color: rgba(0, 229, 255, 0.6);
+            letter-spacing: 1px;
+        }
+
+        .status-panel {
+            text-align: right;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            background: rgba(2, 2, 15, 0.6);
+            padding: 15px;
+            border-left: 2px solid #00e5ff;
+            backdrop-filter: blur(5px);
+        }
+
+        .status-active {
+            color: #00ff88;
+            animation: blink 2s infinite;
+        }
+
+        .hud-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 40px;
+        }
+
+        /* 优化后的尺度显示面板 */
+        .scale-info {
+            background: rgba(2, 2, 15, 0.75);
+            padding: 20px;
+            border-radius: 6px;
+            border: 1px solid rgba(0, 229, 255, 0.25);
+            backdrop-filter: blur(8px);
+            min-width: 380px;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transform: translateZ(0); /* 硬件加速 */
+        }
+
+        .scale-label {
+            font-size: 0.75rem;
+            color: rgba(0, 229, 255, 0.6);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* 核心增设：通俗易懂的宇宙破壁比喻文案 */
+        .scale-analogy {
+            font-size: 0.9rem;
+            color: #ffb74d; /* 采用温暖的琥珀色，从冰冷蓝色的HUD中脱颖而出 */
+            line-height: 1.5;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: system-ui, -apple-system, sans-serif;
+            text-shadow: none;
+        }
+
+        .scale-value {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #fff;
+            font-family: 'Impact', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        .timeline {
+            position: absolute;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            pointer-events: auto;
+            z-index: 12;
+        }
+
+        .timeline-node {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 15px;
+            cursor: pointer;
+            opacity: 0.4;
+            transition: all 0.4s ease;
+        }
+
+        .timeline-node:hover, .timeline-node.active {
+            opacity: 1;
+        }
+
+        .node-text {
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            text-align: right;
+            transform: translateX(10px);
+            transition: transform 0.4s ease;
+        }
+
+        .timeline-node:hover .node-text, .timeline-node.active .node-text {
+            transform: translateX(0);
+            color: #00e5ff;
+        }
+
+        .node-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid transparent;
+            transition: all 0.4s ease;
+        }
+
+        .timeline-node.active .node-dot {
+            background: #00e5ff;
+            box-shadow: 0 0 12px #00e5ff;
+            scale: 1.4;
+        }
+
+        .space-grid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 229, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 229, 255, 0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            background-position: center;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="space-grid"></div>
+    <canvas id="cosmicCanvas"></canvas>
+
+    <div id="hud-container">
+        <div class="hud-header">
+            <div class="telemetry">
+                <h1 id="realm-title">Planet Earth</h1>
+                <p id="sub-realm">SOL-3 // OBSERVABLE UNIVERSE CENTER BASE</p>
+            </div>
+            <div class="status-panel">
+                <div>SYSTEM STATUS: <span class="status-active">ONLINE</span></div>
+                <div id="control-mode">MODE: AUTO-CRUISE</div>
+                <div>PERFORMANCE: GPU_60FPS // ACCELERATED</div>
+            </div>
+        </div>
+
+        <div class="timeline" id="spaceTimeline">
+            <div class="timeline-node active" data-target="0.0">
+                <span class="node-text">地球<br>Earth</span>
+                <div class="node-dot"></div>
+            </div>
+            <div class="timeline-node" data-target="1.0">
+                <span class="node-text">太阳系<br>Solar System</span>
+                <div class="node-dot"></div>
+            </div>
+            <div class="timeline-node" data-target="2.0">
+                <span class="node-text">银河系<br>Milky Way</span>
+                <div class="node-dot"></div>
+            </div>
+            <div class="timeline-node" data-target="3.0">
+                <span class="node-text">超星系团<br>Cosmic Web</span>
+                <div class="node-dot"></div>
+            </div>
+            <div class="timeline-node" data-target="4.0">
+                <span class="node-text">已知极限<br>CMB Horizon</span>
+                <div class="node-dot"></div>
+            </div>
+        </div>
+
+        <div class="hud-footer">
+            <div class="scale-info">
+                <div class="scale-label">宇宙尺度破壁标尺 / COGNITIVE COMPARISON</div>
+                <div class="scale-analogy" id="analogy-display">正在加载宇宙校准数据...</div>
+                <div class="scale-label">当前观测视野直径 / VIEW FIELD WIDTH</div>
+                <div class="scale-value" id="scale-display">12,742 km</div>
+            </div>
+            <div style="font-size: 0.75rem; color: rgba(255,255,255,0.3); text-align: right; max-width: 250px; line-height: 1.4;">
+                * 鼠标滚轮 / 触控板可自由阻尼缩放，点击右侧节点可定向空间折跃。
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('cosmicCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // 核心多级尺度及【通俗直观说明】数据库
+        const scaleData = [
+            { t: 0.0, realm: "Planet Earth", sub: "Sol-3 // 摇篮阶段", scaleStr: "12,742 km", analogy: "🌍 人类所有的历史、战争与文明，都发生在这颗时速10.7万公里狂奔的蓝色小球上。" },
+            { t: 0.4, realm: "Inner Solar System", sub: "类地行星高能轨道区", scaleStr: "3.0 × 10⁸ km", analogy: "🚗 如果把地球缩小到玻璃弹珠大，太阳就像一个海滩排球。此时月球离我们只有30厘米。" },
+            { t: 1.0, realm: "Solar System", sub: "奥尔特云与太阳重力限界", scaleStr: "1.5 × 10¹¹ km", analogy: "✈️ 光从太阳飞到地球只需8分钟；但如果普通民航客机不吃不喝飞完这段距离，需要整整17年。" },
+            { t: 1.5, realm: "Local Interstellar", sub: "古尔德带 // 邻近恒星际空间", scaleStr: "15 光年", analogy: "🌟 距离我们最近的恒星‘比邻星’在4.2光年外。即便搭乘人类最快的旅行者1号飞船，也需要走7万年。" },
+            { t: 2.0, realm: "Milky Way Galaxy", sub: "猎户座旋臂 // 本星系群", scaleStr: "100,000 光年", analogy: "🌌 银河系有千亿恒星。如果把每颗恒星变成一粒细沙，它们能填满一个标准的奥林匹克游泳池。" },
+            { t: 2.5, realm: "Local Group", sub: "室女座超星系团引力聚合体", scaleStr: "1000 万光年", analogy: "🛸 在这个视角下，整个银河系已经缩小成了屏幕中心一粒微不足道的发光小斑点。" },
+            { t: 3.0, realm: "Laniakea / Cosmic Web", sub: "宇宙宏观纤维大网", scaleStr: "5.2 亿光年", analogy: "🕸️ 宇宙最大结构‘宇宙网’。刚才包含千亿恒星的银河系，此刻仅仅是这条发光纤维上的一粒皮屑。" },
+            { t: 3.5, realm: "Deep Observable Space", sub: "高红移古老星系湮灭区", scaleStr: "450 亿光年", analogy: "🔭 这里分布着至少2万亿个星系，可观测宇宙的群星数量比地球上所有沙滩的沙子加起来还要多。" },
+            { t: 4.0, realm: "CMB Horizon", sub: "宇宙微波背景辐射 // 物理观测极限", scaleStr: "930 亿光年", analogy: "👁️ 站在此处，你已触及人类理性的边界。眼前的斑驳红蓝微光，是138 亿年前宇宙大爆炸留下的余温。" }
+        ];
+
+        let currentT = 0.0;    
+        let targetT = 0.0;     
+        let autoZoom = true;   
+        let lastInteraction = 0; 
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        function seededRandom(seed) {
+            let x = Math.sin(seed++) * 10000;
+            return x - Math.floor(x);
+        }
+
+        // --- 离屏 Canvas 高性能贴图烘焙 ---
+        function createOffscreenCanvas(w, h) {
+            const c = document.createElement('canvas');
+            c.width = w;
+            c.height = h;
+            return { canvas: c, ctx: c.getContext('2d') };
+        }
+
+        // 1. 烘焙全局背景星
+        const ambientStarsLayer = createOffscreenCanvas(1024, 1024);
+        for(let i=0; i<1200; i++) {
+            let x = seededRandom(i) * 1024;
+            let y = seededRandom(i+1) * 1024;
+            let size = seededRandom(i+2) * 1.2 + 0.3;
+            let alpha = seededRandom(i+3) * 0.5 + 0.3;
+            ambientStarsLayer.ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+            ambientStarsLayer.ctx.beginPath();
+            ambientStarsLayer.ctx.arc(x, y, size, 0, Math.PI*2);
+            ambientStarsLayer.ctx.fill();
+        }
+
+        // 2. 地球粒子数据
+        const earthParticles = [];
+        for(let i=0; i<250; i++) { 
+            let lat = (seededRandom(i) - 0.5) * Math.PI;
+            let lon = seededRandom(i+500) * Math.PI * 2;
+            earthParticles.push({ lat, lon, size: seededRandom(i+2)*1.2 + 0.5 });
+        }
+        const satellites = [];
+        for(let i=0; i<8; i++) {
+            satellites.push({
+                r: 130 + seededRandom(i)*60,
+                speed: 0.015 + seededRandom(i+10)*0.015,
+                angle: seededRandom(i+20)*Math.PI*2,
+                size: seededRandom(i+30)*1.5 + 1
+            });
+        }
+
+        // 3. 太阳系数据
+        const planets = [
+            { r: 45, color: '#97979f', speed: 0.04, size: 2 },
+            { r: 65, color: '#e3bb76', speed: 0.03, size: 3.2 },
+            { r: 90, color: '#2f72ff', speed: 0.02, size: 3.8 },
+            { r: 120, color: '#ef5f43', speed: 0.016, size: 2.5 },
+            { r: 180, color: '#b07f35', speed: 0.01, size: 7.5 },
+            { r: 240, color: '#e2bf7d', speed: 0.007, size: 6 },
+            { r: 300, color: '#b4e1e7', speed: 0.005, size: 4.5 },
+            { r: 360, color: '#4b70dd', speed: 0.004, size: 4.2 }
+        ];
+
+        // 4. 烘焙银河系
+        const galaxyLayer = createOffscreenCanvas(1000, 1000);
+        galaxyLayer.ctx.translate(500, 500);
+        for(let i=0; i<2500; i++) {
+            let arm = Math.floor(seededRandom(i) * 2);
+            let theta = seededRandom(i+1) * 12; 
+            let r = 12 * Math.exp(0.26 * theta); 
+            let spread = (seededRandom(i+2) - 0.5) * (40 / (theta + 1)) * 15;
+            let angle = theta + (arm * Math.PI) + (seededRandom(i+3)-0.5)*0.2;
+            
+            let x = Math.cos(angle) * r + seededRandom(i+5)*spread;
+            let y = Math.sin(angle) * r + seededRandom(i+6)*spread;
+            let size = seededRandom(i+7) * 1.5 + 0.3;
+            let alpha = seededRandom(i+8) * 0.6 + 0.4;
+            
+            let color = 'rgba(255, 230, 200,';
+            if (r > 120) color = seededRandom(i+4) > 0.4 ? 'rgba(180, 210, 255,' : 'rgba(255, 255, 255,';
+
+            galaxyLayer.ctx.fillStyle = color + alpha + ')';
+            galaxyLayer.ctx.beginPath();
+            galaxyLayer.ctx.arc(x, y, size, 0, Math.PI*2);
+            galaxyLayer.ctx.fill();
+        }
+
+        // 5. 烘焙宇宙网结构
+        const webNodes = [];
+        for(let i=0; i<120; i++) { 
+            webNodes.push({
+                x: (seededRandom(i) - 0.5) * 1000 + 500,
+                y: (seededRandom(i+1) - 0.5) * 1000 + 500,
+                size: seededRandom(i+2)*2 + 1,
+                weight: seededRandom(i+3)
+            });
+        }
+        const cosmicWebLayer = createOffscreenCanvas(1000, 1000);
+        cosmicWebLayer.ctx.strokeStyle = 'rgba(0, 229, 255, 0.05)';
+        cosmicWebLayer.ctx.lineWidth = 0.8;
+        for(let i=0; i<webNodes.length; i++) {
+            for(let j=i+1; j<webNodes.length; j++) {
+                let dx = webNodes[i].x - webNodes[j].x;
+                let dy = webNodes[i].y - webNodes[j].y;
+                if(Math.sqrt(dx*dx + dy*dy) < 130) {
+                    cosmicWebLayer.ctx.beginPath();
+                    cosmicWebLayer.ctx.moveTo(webNodes[i].x, webNodes[i].y);
+                    cosmicWebLayer.ctx.lineTo(webNodes[j].x, webNodes[j].y);
+                    cosmicWebLayer.ctx.stroke();
+                }
+            }
+        }
+        webNodes.forEach(n => {
+            let radGrad = cosmicWebLayer.ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.size*3);
+            let coreColor = n.weight > 0.5 ? 'rgba(230, 200, 255, 0.9)' : 'rgba(100, 200, 255, 0.8)';
+            radGrad.addColorStop(0, coreColor);
+            radGrad.addColorStop(0.4, n.weight > 0.5 ? 'rgba(160, 50, 255, 0.25)' : 'rgba(0, 100, 255, 0.25)');
+            radGrad.addColorStop(1, 'rgba(0,0,0,0)');
+            cosmicWebLayer.ctx.fillStyle = radGrad;
+            cosmicWebLayer.ctx.beginPath();
+            cosmicWebLayer.ctx.arc(n.x, n.y, n.size * 3, 0, Math.PI*2);
+            cosmicWebLayer.ctx.fill();
+        });
+
+        // 6. 烘焙 CMB 辐射层
+        const cmbLayer = createOffscreenCanvas(512, 512);
+        cmbLayer.ctx.fillStyle = '#02010c';
+        cmbLayer.ctx.fillRect(0, 0, 512, 512);
+        for(let i=0; i<180; i++) {
+            let x = seededRandom(i) * 512;
+            let y = seededRandom(i+1) * 512;
+            let r = 20 + seededRandom(i+2) * 50;
+            let isWarm = seededRandom(i+3) > 0.5;
+            let grad = cmbLayer.ctx.createRadialGradient(x, y, 0, x, y, r);
+            grad.addColorStop(0, isWarm ? 'rgba(220, 100, 40, 0.15)' : 'rgba(40, 110, 230, 0.16)');
+            grad.addColorStop(1, 'rgba(0,0,0,0)');
+            cmbLayer.ctx.fillStyle = grad;
+            cmbLayer.ctx.beginPath();
+            cmbLayer.ctx.arc(x, y, r, 0, Math.PI*2);
+            cmbLayer.ctx.fill();
+        }
+
+        function getPhaseAlpha(currentT, nativeT) {
+            let dist = Math.abs(currentT - nativeT);
+            if (dist > 0.7) return 0;
+            return 1 - (dist / 0.7);
+        }
+
+        // --- 绘制渲染层 ---
+        function drawEarth(alpha, scale) {
+            if(alpha <= 0.01) return;
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            
+            let glowGrad = ctx.createRadialGradient(0, 0, 110*scale, 0, 0, 150*scale);
+            glowGrad.addColorStop(0, 'rgba(0, 160, 255, 0.25)');
+            glowGrad.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = glowGrad;
+            ctx.beginPath(); ctx.arc(0, 0, 160*scale, 0, Math.PI*2); ctx.fill();
+
+            let bodyGrad = ctx.createRadialGradient(-30*scale, -30*scale, 10*scale, 0, 0, 120*scale);
+            bodyGrad.addColorStop(0, '#005b9f');
+            bodyGrad.addColorStop(0.8, '#001135');
+            bodyGrad.addColorStop(1, '#00020a');
+            ctx.fillStyle = bodyGrad;
+            ctx.beginPath(); ctx.arc(0, 0, 120*scale, 0, Math.PI*2); ctx.fill();
+
+            ctx.strokeStyle = 'rgba(0, 229, 255, 0.12)';
+            ctx.lineWidth = 0.8;
+            let time = Date.now() * 0.0003;
+            
+            for(let j = -4; j <= 4; j++) {
+                let h = Math.sin(j * Math.PI / 10) * 120 * scale;
+                let r = Math.cos(j * Math.PI / 10) * 120 * scale;
+                if (r > 0) {
+                    ctx.beginPath(); ctx.ellipse(0, h, r, r * 0.25, 0, 0, Math.PI*2); ctx.stroke();
+                }
+            }
+
+            ctx.fillStyle = 'rgba(0, 255, 136, 0.55)';
+            earthParticles.forEach(p => {
+                let rotLon = p.lon + time * 0.5;
+                let x = Math.cos(p.lat) * Math.sin(rotLon);
+                let y = Math.sin(p.lat);
+                let z = Math.cos(p.lat) * Math.cos(rotLon);
+                if(z > 0) {
+                    ctx.beginPath(); ctx.arc(x * 120 * scale, y * 120 * scale, p.size * scale, 0, Math.PI*2); ctx.fill();
+                }
+            });
+
+            satellites.forEach(s => {
+                let curAngle = s.angle + Date.now() * s.speed * 0.05;
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                ctx.beginPath(); ctx.arc(Math.cos(curAngle)*s.r*scale, Math.sin(curAngle)*s.r*scale*0.4, s.size*scale, 0, Math.PI*2); ctx.fill();
+            });
+            ctx.restore();
+        }
+
+        function drawSolarSystem(alpha, scale) {
+            if(alpha <= 0.01) return;
+            ctx.save();
+            ctx.globalAlpha = alpha;
+
+            let sunGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, 22 * scale);
+            sunGrad.addColorStop(0, '#ffffff');
+            sunGrad.addColorStop(0.3, '#ffcc00');
+            sunGrad.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = sunGrad;
+            ctx.beginPath(); ctx.arc(0, 0, 40 * scale, 0, Math.PI*2); ctx.fill();
+
+            let timeFactor = Date.now() * 0.015;
+            planets.forEach((p, idx) => {
+                ctx.strokeStyle = 'rgba(0, 229, 255, 0.06)';
+                ctx.beginPath(); ctx.arc(0, 0, p.r * scale, 0, Math.PI*2); ctx.stroke();
+
+                let curAngle = (idx * 45) + (timeFactor * p.speed);
+                let px = Math.cos(curAngle) * p.r * scale;
+                let py = Math.sin(curAngle) * p.r * scale;
+
+                ctx.fillStyle = p.color;
+                ctx.beginPath(); ctx.arc(px, py, Math.max(1, p.size * scale * 0.6), 0, Math.PI*2); ctx.fill();
+
+                if (idx === 2) { 
+                    ctx.strokeStyle = 'rgba(0, 255, 136, 0.3)';
+                    ctx.beginPath(); ctx.arc(px, py, (p.size + 4)*scale, 0, Math.PI*2); ctx.stroke();
+                }
+            });
+            ctx.restore();
+        }
+
+        function drawMilkyWay(alpha, scale) {
+            if(alpha <= 0.01) return;
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            ctx.globalCompositeOperation = 'screen';
+            let size = 1000 * scale;
+            ctx.drawImage(galaxyLayer.canvas, -size/2, -size/2, size, size);
+            ctx.restore();
+        }
+
+        function drawCosmicWeb(alpha, scale) {
+            if(alpha <= 0.01) return;
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            let size = 1000 * scale;
+            ctx.drawImage(cosmicWebLayer.canvas, -size/2, -size/2, size, size);
+            ctx.restore();
+        }
+
+        function drawCMB(alpha) {
+            if(alpha <= 0.01) return;
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            ctx.drawImage(cmbLayer.canvas, 0, 0, width, height);
+            
+            let vignette = ctx.createRadialGradient(width/2, height/2, height*0.2, width/2, height/2, width*0.6);
+            vignette.addColorStop(0, 'rgba(2,2,10,0.0)');
+            vignette.addColorStop(1, 'rgba(2,2,10,0.96)');
+            ctx.fillStyle = vignette;
+            ctx.fillRect(0, 0, width, height);
+            ctx.restore();
+        }
+
+        // --- 同步更新 HUD 及 破壁比喻文案 ---
+        function updateHUD(t) {
+            let currentData = scaleData[0];
+            // 线性检索获取当前尺度最对应的比喻文案
+            for (let i = 0; i < scaleData.length; i++) {
+                if (t >= scaleData[i].t) currentData = scaleData[i];
+            }
+
+            document.getElementById('realm-title').innerText = currentData.realm;
+            document.getElementById('sub-realm').innerText = currentData.sub;
+            document.getElementById('scale-display').innerText = currentData.scaleStr;
+            document.getElementById('analogy-display').innerText = currentData.analogy;
+
+            const nodes = document.querySelectorAll('.timeline-node');
+            nodes.forEach((node) => {
+                let nodeTarget = parseFloat(node.getAttribute('data-target'));
+                if (Math.abs(t - nodeTarget) < 0.5) {
+                    nodes.forEach(n => n.classList.remove('active'));
+                    node.classList.add('active');
+                }
+            });
+        }
+
+        // --- 主动态循环 ---
+        function animate() {
+            if (!autoZoom && Date.now() - lastInteraction > 5000) {
+                autoZoom = true;
+                document.getElementById('control-mode').innerText = "MODE: AUTO-CRUISE";
+                document.getElementById('control-mode').style.color = "";
+            }
+
+            if (autoZoom) {
+                targetT += 0.0018; // 略微放慢速度，让用户有时间阅读说明
+                if (targetT > 4.2) {
+                    targetT = 0.0;
+                    currentT = 0.0;
+                }
+            }
+
+            currentT += (targetT - currentT) * 0.05;
+
+            ctx.fillStyle = '#010106';
+            ctx.fillRect(0, 0, width, height);
+            
+            // 背景静态环境星渲染
+            let ambientAlpha = 1.0;
+            if (currentT > 1.2) {
+                ambientAlpha = Math.max(0, 1 - (currentT - 1.2) / 0.6);
+            }
+            if (ambientAlpha > 0.01) {
+                ctx.save();
+                ctx.globalAlpha = ambientAlpha;
+                ctx.drawImage(ambientStarsLayer.canvas, 0, 0, width, height);
+                ctx.restore();
+            }
+
+            ctx.save();
+            ctx.translate(width / 2, height / 2);
+
+            // 指数级矩阵无缝混合
+            drawEarth(getPhaseAlpha(currentT, 0.0), Math.exp((0.0 - currentT) * 4.5));
+            drawSolarSystem(getPhaseAlpha(currentT, 1.0), Math.exp((1.0 - currentT) * 4.5));
+            drawMilkyWay(getPhaseAlpha(currentT, 2.0), Math.exp((2.0 - currentT) * 4.5));
+            drawCosmicWeb(getPhaseAlpha(currentT, 3.0), Math.exp((3.0 - currentT) * 4.5));
+
+            ctx.restore();
+
+            // 最底层物理视界边界
+            drawCMB(getPhaseAlpha(currentT, 4.0));
+
+            updateHUD(currentT);
+            requestAnimationFrame(animate);
+        }
+
+        // --- 交互捕获 ---
+        window.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            autoZoom = false;
+            lastInteraction = Date.now();
+            document.getElementById('control-mode').innerText = "MODE: MANUAL_CTRL";
+            document.getElementById('control-mode').style.color = "#ffaa00";
+
+            targetT += e.deltaY * 0.0012;
+            targetT = Math.max(0.0, Math.min(4.0, targetT));
+        }, { passive: false });
+
+        document.getElementById('spaceTimeline').addEventListener('click', (e) => {
+            let node = e.target.closest('.timeline-node');
+            if(node) {
+                autoZoom = false;
+                lastInteraction = Date.now();
+                document.getElementById('control-mode').innerText = "MODE: MANUAL_CTRL";
+                document.getElementById('control-mode').style.color = "#ffaa00";
+                targetT = parseFloat(node.getAttribute('data-target'));
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        animate();
+    </script>
+</body>
+</html>
