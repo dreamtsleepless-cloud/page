@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>逆向觉醒：解锁你的反直觉思维图谱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans SC', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0, 6) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+        .custom-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .page-transition {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        /* 隐藏滚动条 */
+        ::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex items-center justify-center p-4 md:p-8 overflow-x-hidden selection:bg-indigo-200">
+
+    <div class="fixed top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-indigo-200 rounded-full blur-[120px] opacity-50 pointer-events-none animate-pulse-slow"></div>
+    <div class="fixed bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-pink-200 rounded-full blur-[120px] opacity-40 pointer-events-none animate-pulse-slow" style="animation-delay: 1.5s;"></div>
+
+    <div class="w-full max-w-2xl min-h-[600px] flex flex-col justify-between relative z-10">
+        
+        <div id="welcome-screen" class="glass-card rounded-3xl p-8 md:p-12 shadow-2xl text-center flex flex-col justify-between flex-grow page-transition transform translate-y-0 opacity-100">
+            <div class="animate-float">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-200 mb-6">
+                    <i class="fa-solid fa-compass-drafting text-2xl"></i>
+                </div>
+                <h1 class="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight mb-4">逆向觉醒测试</h1>
+                <p class="text-indigo-600 font-medium mb-6">—— 探测你未曾觉醒的“反直觉思维”天赋</p>
+                <div class="h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent my-6"></div>
+                <p class="text-slate-600 leading-relaxed text-left max-w-md mx-auto">
+                    在成长的道路上，很多我们习以为常的“常理”，往往是禁锢潜能的隐形枷锁。
+                    本测试包含 <span class="font-semibold text-indigo-600">5 个精选的行为科学情境</span>。请放下防备，跟随直觉选择你最真实的倾向。我们将为你破译一段更轻松、更具爆发力的隐形人生算法。
+                </p>
+            </div>
+            <div class="mt-8">
+                <button onclick="startQuiz()" class="w-full py-4 px-8 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-2xl shadow-xl shadow-indigo-100 transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 group flex items-center justify-center gap-2">
+                    <span>开启探索之旅</span>
+                    <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="quiz-screen" class="glass-card rounded-3xl p-6 md:p-10 shadow-2xl flex flex-col justify-between flex-grow page-transition transform translate-y-10 opacity-0 hidden">
+            <div>
+                <div class="flex items-center justify-between mb-6">
+                    <button onclick="prevQuestion()" id="prev-btn" class="text-slate-400 hover:text-slate-600 flex items-center gap-1 text-sm transition-colors opacity-0 pointer-events-none">
+                        <i class="fa-solid fa-chevron-left text-xs"></i> 返回上一题
+                    </button>
+                    <span class="text-xs font-semibold uppercase tracking-wider bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full" id="progress-text">Dimension 1/5</span>
+                </div>
+                <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden mb-8">
+                    <div id="progress-bar" class="h-full bg-indigo-600 rounded-full transition-all duration-300" style="width: 20%;"></div>
+                </div>
+                <div id="question-box" class="transition-all duration-300 transform translate-y-0 opacity-100">
+                    <h2 id="question-text" class="text-xl md:text-2xl font-bold text-slate-900 leading-snug mb-8">正在加载情境...</h2>
+                    <div id="options-container" class="space-y-4">
+                        </div>
+                </div>
+            </div>
+            <div class="mt-8 pt-4 border-t border-slate-100 text-center">
+                <p class="text-xs text-slate-400 flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-shield-halved text-indigo-400"></i> 本测试选项无优劣之分，请选择符合此时此刻最真实内心的做法。
+                </p>
+            </div>
+        </div>
+
+        <div id="loading-screen" class="glass-card rounded-3xl p-8 shadow-2xl text-center flex flex-col items-center justify-center flex-grow page-transition transform translate-y-10 opacity-0 hidden">
+            <div class="relative w-24 h-24 mb-6">
+                <div class="absolute inset-0 rounded-full border-4 border-indigo-100 border-t-indigo-600 animate-spin"></div>
+                <div class="absolute inset-3 rounded-full border-4 border-pink-100 border-b-pink-500 animate-spin" style="animation-direction: reverse; animation-duration: 1.5s;"></div>
+                <div class="absolute inset-0 flex items-center justify-center text-indigo-600">
+                    <i class="fa-solid fa-brain text-xl animate-pulse"></i>
+                </div>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 mb-2" id="loading-title">正在破译你的思维惯性...</h3>
+            <p class="text-sm text-slate-500 max-w-xs mx-auto" id="loading-desc">解析多维度交叉画像中，请稍候</p>
+        </div>
+
+        <div id="result-screen" class="glass-card rounded-3xl p-6 md:p-10 shadow-2xl page-transition transform translate-y-10 opacity-0 hidden">
+            <div class="text-center pb-6 border-b border-slate-100">
+                <div class="inline-block px-3 py-1 bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-xs font-bold tracking-widest rounded-full uppercase mb-3 shadow-sm">
+                    Psychology Report
+                </div>
+                <p class="text-sm text-slate-500 mb-1">你的专属思维图谱专属称号</p>
+                <h2 id="result-title" class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent py-1">
+                    加载中...
+                </h2>
+            </div>
+
+            <div class="my-6 p-5 bg-gradient-to-br from-indigo-50/60 to-purple-50/40 rounded-2xl border border-indigo-100/50">
+                <h4 class="text-xs font-bold text-indigo-700 tracking-wider uppercase mb-2 flex items-center gap-1">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> 核心潜能赋能
+                </h4>
+                <p id="result-empowerment" class="text-slate-700 text-sm md:text-base leading-relaxed font-medium">
+                    加载中...
+                </p>
+            </div>
+
+            <div class="space-y-4 max-h-[320px] overflow-y-auto pr-2 mb-6">
+                <h4 class="text-xs font-bold text-slate-400 tracking-wider uppercase flex items-center gap-1">
+                    <i class="fa-solid fa-book-open"></i> 硬核反直觉科普 (为什么这些对你极有帮助？)
+                </h4>
+                <div id="science-container" class="space-y-3">
+                    </div>
+            </div>
+
+            <div class="pt-5 border-t border-slate-100">
+                <h4 class="text-xs font-bold text-emerald-600 tracking-wider uppercase mb-3 flex items-center gap-1">
+                    <i class="fa-solid fa-circle-check"></i> 无门槛·行动指南 (看完今天就能做)
+                </h4>
+                <ul id="action-list" class="space-y-2 text-sm text-slate-600">
+                    </ul>
+            </div>
+
+            <button onclick="resetQuiz()" class="w-full mt-6 py-3 px-6 bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium rounded-xl transition-all duration-200 flex items-center justify-center gap-2 text-sm">
+                <i class="fa-solid fa-rotate-left"></i> 重测一次，发掘更多可能
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // 1. 趣味测试题库设计（反直觉心理学核心逻辑）
+        const questions = [
+            {
+                dimension: "社交心理学",
+                icon: "fa-user-group",
+                text: "当你加入一个向往已久的高精英团队，在第一次正式聚餐时不小心把茶水洒在衣服上，你的第一反应是？",
+                options: [
+                    { 
+                        text: "感到非常自责和尴尬，极力掩饰或不断解释，试图挽回自己“精明干练”的完好印象。", 
+                        score: 0,
+                        science: "💡 <b>出丑效应 (Pratfall Effect)</b>：心理学证实，对于一个有能力的人来说，偶尔暴露的小致命伤或尴尬，反而会打破距离感，让人觉得真实而更具亲和力，从而大幅提升好感度。完美无瑕往往让人防备。"
+                    },
+                    { 
+                        text: "自嘲地笑笑，轻松开个玩笑（如“看来连衣服都在为加入团队而兴奋”），坦然接受自己的不小心。", 
+                        score: 1,
+                        science: "💡 <b>出丑效应 (Pratfall Effect)</b>：你天然拥有高水平的脆弱力量！心理学证实，对于有能力的人来说，偶尔暴露的小尴尬反而会打破距离感，让人觉得真实。你坦然自嘲的能力正是最高级的社交吸引力。"
+                    }
+                ]
+            },
+            {
+                dimension: "高效能认知",
+                icon: "fa-bolt",
+                text: "连续高强度死磕一个复杂的创意方案，此时已是深夜两点，你思维彻底死机、内心开始焦虑，你会选择？",
+                options: [
+                    { 
+                        text: "咬牙坚持，坚信“天道酬勤”，喝杯咖啡强迫自己继续枯坐在电脑前死磕，直到做出来为止。", 
+                        score: 0,
+                        science: "💡 <b>默认模式网络 (DMN)</b>：脑科学发现，当大脑在不带目的地“发呆”或彻底休息时，其DMN网络反而高度活跃，会在潜意识里自动重组无序信息。一味苦熬只会锁死灵感。"
+                    },
+                    { 
+                        text: "立刻关机去睡觉，或者下楼毫无目的地散步、发呆20分钟，把未完的工作彻底抛诸脑后。", 
+                        score: 1,
+                        science: "💡 <b>默认模式网络 (DMN)</b>：你懂得主动运用大脑的隐形引擎！脑科学发现，当大脑彻底“离线”发呆或睡眠时，DMN网络会暗中重组无序信息，这就是为什么许多天才的灵感都诞生于‘洗澡或散步’中。"
+                    }
+                ]
+            },
+            {
+                dimension: "情绪韧性",
+                icon: "fa-heart",
+                text: "当遭遇了一次意外的职场挫折或严重的人际冲突，极度沮丧和焦虑的情绪如潮水般涌来时：",
+                options: [
+                    { 
+                        text: "迅速进行“正能量”心理建设，强行对自己念“要坚强、不能哭”，拼命寻找这件事情的积极意义。", 
+                        score: 0,
+                        science: "💡 <b>讽刺进程理论 (Ironic Process Theory)</b>：当我们越强烈地强迫自己“不要悲伤”时，大脑反而会拨出更多资源去监视悲伤，导致负面情绪被成倍放大。强行积极有时反而是种隐形毒药。"
+                    },
+                    { 
+                        text: "找个安静的角落允许自己彻底“丧”一会，甚至流泪，在心里对自己说：“我现在确实感觉糟透了”。", 
+                        score: 1,
+                        science: "💡 <b>接纳与承诺疗法 (ACT)</b>：你对情绪有着惊人的深度接纳力。心理学证实，给负面情绪一个合法的名分（命名情绪）并允许其流淌，大脑杏仁核的警报就会迅速降温。允许自己丧，才是最快的自愈手段。"
+                    }
+                ]
+            },
+            {
+                dimension: "决策心理学",
+                icon: "fa-code-fork",
+                text: "你投入了一年的业余时间和大量金钱去学习一门新技能，但渐渐发现自己毫无天赋且过程极其痛苦，此时：",
+                options: [
+                    { 
+                        text: "坚信“剩者为王”，认为放弃意味着前功尽弃，为了对得起之前投入的巨大成本，逼迫自己硬着头皮熬下去。", 
+                        score: 0,
+                        science: "💡 <b>沉没成本谬误 (Sunk Cost Fallacy)</b>：大部分人因为舍不得“过去的付出”而持续做出错误的决策。事实上，最顶尖的智者都是“战略性放弃（Strategic Quitting）”的高手，及时止损才能解放精力。"
+                    },
+                    { 
+                        text: "果断选择“战略性放弃”，坦然承认此路不通，并将省下来的精力重新分配到更适合自己的领域。", 
+                        score: 1,
+                        science: "💡 <b>精明放弃 (Strategic Quitting)</b>：恭喜你避开了多数人都无法摆脱的‘沉没成本谬误’！高手的标志不是盲目坚持，而是有勇气承认不适合，并精准果断地将沉没成本清零，聚焦于更高价值的事物上。"
+                    }
+                ]
+            },
+            {
+                dimension: "自我驱动力",
+                icon: "fa-fire",
+                text: "你在心中酝酿了一个颠覆性的个人蜕变计划（如：跨界转行、或深度减重），你会倾向于：",
+                options: [
+                    { 
+                        text: "发朋友圈或告诉身边所有人，通过“公开承诺”制造舆论压力，以此来逼迫自己坚持下去。", 
+                        score: 0,
+                        science: "💡 <b>替代效应 (Substitution Effect)</b>：心理学研究表明，当你提前宣布目标并获得朋友的赞赏时，大脑会产生“我已经做到了”的虚假满足感，反而会削弱你真正执行时的内驱力。"
+                    },
+                    { 
+                        text: "保持绝对沉默，不向任何人透露，默默买好所需工具或课程，悄无声息地开启第一步。", 
+                        score: 1,
+                        science: "💡 <b>社会现实整合机制</b>：聪明的内耗阻断者！不提前宣扬可以保护你脆弱的初始动能。避免了大脑因提前获得社会赞许而产生“虚假成就感”，让真正的多巴胺只在付出实际行动时才分泌。"
+                    }
+                ]
+            }
+        ];
+
+        let currentIndex = 0;
+        let userAnswers = []; // 存储用户的每题选择
+
+        // 2. 状态切换函数
+        function showScreen(screenId) {
+            const screens = ['welcome-screen', 'quiz-screen', 'loading-screen', 'result-screen'];
+            screens.forEach(id => {
+                const el = document.getElementById(id);
+                if (id === screenId) {
+                    el.classList.remove('hidden');
+                    setTimeout(() => {
+                        el.classList.remove('opacity-0', 'translate-y-10', 'translate-y-0');
+                        el.classList.add('opacity-100', 'translate-y-0');
+                    }, 50);
+                } else {
+                    el.classList.add('opacity-0', 'translate-y-10');
+                    el.classList.remove('opacity-100', 'translate-y-0');
+                    el.classList.add('hidden');
+                }
+            });
+        }
+
+        // 3. 开始测试
+        function startQuiz() {
+            currentIndex = 0;
+            userAnswers = [];
+            showScreen('quiz-screen');
+            renderQuestion();
+        }
+
+        // 4. 渲染题目
+        function renderQuestion() {
+            const q = questions[currentIndex];
+            
+            // 动画效果过渡
+            const qBox = document.getElementById('question-box');
+            qBox.classList.add('opacity-0', 'translate-y-4');
+
+            setTimeout(() => {
+                // 更新进度文字和进度条
+                document.getElementById('progress-text').innerHTML = `<i class="fa-solid ${q.icon} text-indigo-500 mr-1"></i> 维度 ${currentIndex + 1}/5：${q.dimension}`;
+                document.getElementById('progress-bar').style.width = `${((currentIndex + 1) / questions.length) * 100}%`;
+                document.getElementById('question-text').innerText = q.text;
+
+                // 更新返回按钮状态
+                const prevBtn = document.getElementById('prev-btn');
+                if (currentIndex > 0) {
+                    prevBtn.classList.remove('opacity-0', 'pointer-events-none');
+                } else {
+                    prevBtn.classList.add('opacity-0', 'pointer-events-none');
+                }
+
+                // 渲染选项
+                const container = document.getElementById('options-container');
+                container.innerHTML = '';
+                
+                q.options.forEach((opt, idx) => {
+                    const isSelected = userAnswers[currentIndex] === idx;
+                    const btn = document.createElement('button');
+                    btn.className = `w-full text-left p-5 rounded-2xl border text-sm md:text-base transition-all duration-200 flex items-start gap-3 group relative overflow-hidden ${
+                        isSelected 
+                        ? 'border-indigo-600 bg-indigo-50/50 text-indigo-900 font-medium ring-2 ring-indigo-600/20' 
+                        : 'border-slate-200 bg-white/50 hover:border-indigo-300 hover:bg-indigo-50/20 text-slate-700'
+                    }`;
+                    
+                    // 序号标签样式
+                    const labelChar = String.fromCharCode(65 + idx);
+                    btn.innerHTML = `
+                        <span class="flex-shrink-0 w-6 h-6 rounded-lg text-xs font-bold flex items-center justify-center transition-colors ${
+                            isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-500 group-hover:bg-indigo-100 group-hover:text-indigo-600'
+                        }">${labelChar}</span>
+                        <span class="leading-relaxed">${opt.text}</span>
+                    `;
+                    
+                    btn.onclick = () => selectOption(idx);
+                    container.appendChild(btn);
+                });
+
+                qBox.classList.remove('opacity-0', 'translate-y-4');
+            }, 250);
+        }
+
+        // 5. 选择选项
+        function selectOption(index) {
+            userAnswers[currentIndex] = index;
+            
+            // 短暂延迟让用户看清选中效果，随后进入下一题
+            setTimeout(() => {
+                if (currentIndex < questions.length - 1) {
+                    currentIndex++;
+                    renderQuestion();
+                } else {
+                    processResults();
+                }
+            }, 300);
+        }
+
+        // 6. 返回上一题
+        function prevQuestion() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                renderQuestion();
+            }
+        }
+
+        // 7. 处理并展示加载过渡与报告结果
+        function processResults() {
+            showScreen('loading-screen');
+            
+            // 动态变化加载文案，提升仪式感
+            const titles = ["正在扫描直觉漏洞...", "正在重构思维图谱...", "正在引入反直觉能量场..."];
+            let tIdx = 0;
+            const interval = setInterval(() => {
+                if(tIdx < titles.length) {
+                    document.getElementById('loading-title').innerText = titles[tIdx++];
+                }
+            }, 800);
+
+            setTimeout(() => {
+                clearInterval(interval);
+                generateReport();
+                showScreen('result-screen');
+                // 触发烟花特效
+                triggerConfetti();
+            }, 2600);
+        }
+
+        // 8. 核心报告生成逻辑 (极度赋能与正向激励)
+        function generateReport() {
+            // 计算反直觉选择的总数 (即score为1的个数)
+            let totalScore = 0;
+            userAnswers.forEach((ansIdx, qIdx) => {
+                totalScore += questions[qIdx].options[ansIdx].score;
+            });
+
+            let reportTitle = "";
+            let empowermentText = "";
+            let actionGuides = [];
+
+            // 正向激励文案算法
+            if (totalScore <= 1) {
+                reportTitle = "✨ 【高能稳定守望者】 (The Steady Guardian)";
+                empowermentText = "你拥有极强的现实掌控力与清晰的社会理性。你的直觉高度符合主流秩序的优秀法则，是团队与人际关系中极具安全感的中流砥柱。你不需要否定过去，只需在日常中像魔术师般轻轻推开几扇反直觉的窗，就能在无损当前稳定性的同时，爆发式地拓宽你的人生边界！";
+                actionGuides = [
+                    "<b>「刻意出丑」小实验</b>：本周尝试在完全安全的朋友或同事面前，大方承认一个自己不会的小技能（或分享一个无伤大雅的小嗅事），亲身感受对方是更防备你还是更亲近你。",
+                    "<b>给情绪发个“官方通行证”</b>：下次感到烦躁或焦虑时，停止对自己喊停，在心中默念：“我现在的焦虑是7分，这很正常。”闭眼允许它存在3分钟，见证它自然消退的神奇体验。"
+                ];
+            } else if (totalScore <= 3) {
+                reportTitle = " 🧠 【平衡智性探索家】 (The Balanced Explorer)";
+                empowermentText = "惊人的自适应能力！你既完美保留了保护你高效运转的现实理性，又对生命更深处的“反直觉机制”保持着敏锐的嗅觉。你擅长在常规与打破常规之间优雅地跳舞。这种平衡的特质让你可以随时切换频道：既能靠高自律拿到结果，也能靠反直觉智慧在关键时刻进行心理突围，具备极强的成长弹性。";
+                actionGuides = [
+                    "<b>无手机的20分钟“战术发呆”</b>：在下一次思维卡壳或极度疲惫时，强迫自己关掉屏幕。静坐在窗前或者下楼无序散步，不要带有任何产出目的，让大脑的潜意识引擎（DMN）为你自动拼凑创意的碎片。",
+                    "<b>“沉没成本”清理周</b>：找出一样你坚持了很久但纯粹是出于“不舍得放手”而让你极其痛苦的事情（一本书、一个习惯、甚至一个毫无意义的执念），尝试果断地选择一次‘战略性放弃’，腾出空间给真正发光的事物。"
+                ];
+            } else {
+                reportTitle = " 🌌 【高维反常规觉醒者】 (The Quantum Paradigm Shifter)";
+                empowermentText = "极致的认知层次！你天然拥有洞穿表象、直击宇宙与人性深层暗流的罕见天赋。你敢于违背常规直觉去拥抱脆弱、接纳停滞、进行战略性放弃——这种“反向操作”正是人类历史上顶尖智者、颠覆性创新者与高情绪韧性者最核心的共通特质。你早已摆脱了社会惯性的束缚，正在开启一套只属于你自己的高阶生命算法。";
+                actionGuides = [
+                    "<b>践行「深空静默行动」</b>：当下一次你有了宏大且兴奋的新个人计划时，克制住发朋友圈宣扬的冲动。将其作为秘密武器默默执行一周，你会体验到由纯粹行动而非他人赞美带来的、更持久的核能级爆发力。",
+                    "<b>打造你的「反直觉能量笔记」</b>：将你通过选择“退让、示弱、放弃”反而获得更好结果的亲身经历记录下来。当你把这些经验固化为你的第二本能，你将不再受任何教条的束缚。"
+                ];
+            }
+
+            // 更新DOM
+            document.getElementById('result-title').innerText = reportTitle;
+            document.getElementById('result-empowerment').innerHTML = empowermentText;
+
+            // 生成硬核科普卡片 (根据用户所选题目的实际内容来展示，极具针对性)
+            const scienceContainer = document.getElementById('science-container');
+            scienceContainer.innerHTML = '';
+            
+            questions.forEach((q, qIdx) => {
+                const userAnsIdx = userAnswers[qIdx];
+                const card = document.createElement('div');
+                card.className = "p-4 bg-white/60 border border-slate-100 rounded-xl text-xs md:text-sm text-slate-600 leading-relaxed shadow-sm flex gap-3";
+                card.innerHTML = `
+                    <div class="flex-shrink-0 text-indigo-500 mt-0.5"><i class="fa-solid ${q.icon}"></i></div>
+                    <div>
+                        <span class="font-bold text-slate-800 block mb-1">【${q.dimension}解析】</span>
+                        ${q.options[userAnsIdx].science}
+                    </div>
+                `;
+                scienceContainer.appendChild(card);
+            });
+
+            // 生成行动指南
+            const actionList = document.getElementById('action-list');
+            actionList.innerHTML = '';
+            actionGuides.forEach(guide => {
+                const li = document.createElement('li');
+                li.className = "flex items-start gap-2 text-slate-600 leading-relaxed text-xs md:text-sm";
+                li.innerHTML = `
+                    <i class="fa-solid fa-square-check text-emerald-500 mt-1 flex-shrink-0"></i>
+                    <span>${guide}</span>
+                `;
+                actionList.appendChild(li);
+            });
+        }
+
+        // 9. 绚丽彩蛋动效
+        function triggerConfetti() {
+            var duration = 2 * 1000;
+            var end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 3,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#6366f1', '#a855f7', '#ec4899']
+                });
+                confetti({
+                    particleCount: 3,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#6366f1', '#a855f7', '#ec4899']
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+        }
+
+        // 10. 重置测试
+        function resetQuiz() {
+            showScreen('welcome-screen');
+        }
+    </script>
+</body>
+</html>
