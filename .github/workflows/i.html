@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>灵魂侧写：解锁你的时间美学基因</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes rotateCompass {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .animate-compass { animation: rotateCompass 3.5s linear infinite; }
+        ::-webkit-scrollbar { display: none; }
+        body { 
+            -webkit-tap-highlight-color: transparent; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-rose-950/10 text-slate-800 min-h-screen flex justify-center items-center antialiased">
+
+    <div id="app-container" class="w-full max-w-md min-h-screen bg-gradient-to-b from-indigo-50 via-rose-50 to-amber-50 flex flex-col justify-between p-6 relative overflow-hidden transition-all duration-1000 shadow-xl">
+        
+        <div id="home-view" class="flex-1 flex flex-col justify-between py-6">
+            <div class="text-center mt-6 space-y-4">
+                <div class="inline-block bg-rose-100 text-rose-600 border border-rose-200 px-4 py-1.5 rounded-full text-xs tracking-widest font-semibold uppercase animate-pulse">
+                    ✨ Aesthetics × Chrono-Personality
+                </div>
+                <h1 class="text-2xl font-black tracking-tight text-slate-800 leading-snug px-2">
+                    你不好奇……<br>和你<span class="text-rose-500">同一时间</span>出生的人<br>骨子里有什么共同的灵魂引力吗？
+                </h1>
+                <p class="text-slate-500 text-xs px-6 leading-relaxed">
+                    这无关传统说教。我们将古老的时间时空坐标，转化为现代视觉美学与生物钟心理学，为你定制一张专属的“灵魂氛围卡片”。
+                </p>
+            </div>
+
+            <div class="space-y-4 my-8 bg-white/60 backdrop-blur-md p-5 rounded-2xl border border-white/80 shadow-sm">
+                <label class="block text-xs font-bold text-slate-400 tracking-wider text-center uppercase">选择你出生的时间区间</label>
+                <div class="relative">
+                    <select id="shichen-select" onchange="updateThemePreview()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-center text-base font-bold text-slate-700 appearance-none focus:outline-none focus:border-rose-300 transition-all">
+                        <option value="0">23:00 - 01:00 (深夜静谧)</option>
+                        <option value="1">01:00 - 03:00 (微茫黎明)</option>
+                        <option value="2">03:00 - 05:00 (破晓微光)</option>
+                        <option value="3">05:00 - 07:00 (清晨熹微)</option>
+                        <option value="4">07:00 - 09:00 (朝阳初绽)</option>
+                        <option value="5">09:00 - 11:00 (溢彩上午)</option>
+                        <option value="6">11:00 - 13:00 (炽热正午)</option>
+                        <option value="7">13:00 - 15:00 (慵懒午后)</option>
+                        <option value="8">15:00 - 17:00 (斜阳熔金)</option>
+                        <option value="9">17:00 - 19:00 (黄昏薄暮)</option>
+                        <option value="10">19:00 - 21:00 (华灯初上)</option>
+                        <option value="11" selected>21:00 - 23:00 (睡前微醺)</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-slate-400">▼</div>
+                </div>
+                <p class="text-[10px] text-slate-400 text-center italic">注：如果不确定具体分钟，只要在这个大区间内即可</p>
+            </div>
+
+            <button onclick="triggerVerification()" class="w-full bg-gradient-to-r from-rose-400 via-pink-400 to-indigo-400 text-white font-bold py-4 rounded-xl shadow-md shadow-rose-300/30 transform active:scale-95 transition-all text-center tracking-wider text-sm">
+                生成我的灵魂氛围报告
+            </button>
+        </div>
+
+        <div id="loading-view" class="hidden flex-1 flex flex-col justify-center items-center space-y-8 py-12">
+            <div class="relative w-36 h-36 flex justify-center items-center">
+                <div class="absolute inset-0 border-2 border-dashed border-rose-300 rounded-full animate-compass"></div>
+                <div class="absolute inset-3 border border-indigo-200 rounded-full animate-compass" style="animation-direction: reverse;"></div>
+                <div class="z-10 text-center">
+                    <span class="text-xs text-rose-400 tracking-widest font-bold">CHRONO</span>
+                    <span class="text-[10px] text-slate-400 block mt-0.5">正在捕捉节律</span>
+                </div>
+            </div>
+            
+            <div class="text-center space-y-1.5">
+                <h3 class="text-sm font-bold text-slate-600" id="loading-status">正在连接时间美学分析仪...</h3>
+                <p class="text-[10px] text-slate-400">心有灵犀的数据比对中，请稍候</p>
+            </div>
+        </div>
+
+        <div id="result-view" class="hidden flex-1 flex flex-col justify-between">
+            
+            <div id="share-card" class="bg-white/70 backdrop-blur-lg border border-white/80 rounded-2xl p-5 space-y-5 shadow-xl relative">
+                <div class="flex justify-between items-end border-b border-slate-100 pb-3">
+                    <div>
+                        <span class="text-[10px] text-slate-400 block uppercase tracking-widest">Aura Signature</span>
+                        <h2 id="res-shichen-tag" class="text-xl font-black text-slate-800 tracking-wide mt-0.5">【未定义】</h2>
+                    </div>
+                    <div id="res-mbti" class="bg-slate-900 text-white px-2 py-0.5 rounded text-[10px] font-mono tracking-wider font-bold">
+                        VIBE
+                    </div>
+                </div>
+
+                <div class="space-y-3.5">
+                    <div class="bg-white/40 p-3 rounded-xl border border-white/50">
+                        <div class="flex items-center space-x-1.5 text-rose-400 text-xs font-bold mb-1">
+                            <span>🔮</span> <span>时空留给你的灵魂侧写</span>
+                        </div>
+                        <p id="res-ancient" class="text-slate-600 text-xs leading-relaxed"></p>
+                    </div>
+
+                    <div class="bg-white/40 p-3 rounded-xl border border-white/50">
+                        <div class="flex items-center space-x-1.5 text-indigo-400 text-xs font-bold mb-1">
+                            <span>👥</span> <span>你在别人眼里的磁场</span>
+                        </div>
+                        <p id="res-public" class="text-slate-600 text-xs leading-relaxed"></p>
+                    </div>
+
+                    <div class="bg-white/40 p-3 rounded-xl border border-white/50">
+                        <div class="flex items-center space-x-1.5 text-emerald-500 text-xs font-bold mb-1">
+                            <span>🔬</span> <span>现代昼夜节律与身体原力</span>
+                        </div>
+                        <p id="res-science" class="text-slate-600 text-xs leading-relaxed"></p>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-rose-50 to-indigo-50 p-3 rounded-xl border border-rose-100">
+                        <div class="flex items-center space-x-1.5 text-amber-500 text-xs font-bold mb-1">
+                            <span>💄</span> <span>本命生活美学调理指南</span>
+                        </div>
+                        <p id="res-tip" class="text-slate-700 text-xs leading-relaxed italic font-medium"></p>
+                    </div>
+                </div>
+
+                <div class="pt-2 flex justify-between items-center text-[9px] text-slate-400 border-t border-slate-100">
+                    <span>AURA LAB © 2026</span>
+                    <span class="font-bold tracking-wider text-rose-400">✨ 长按截屏 分享你的本命氛围</span>
+                </div>
+            </div>
+
+            <button onclick="resetTest()" class="mt-5 w-full bg-white/40 hover:bg-white/60 border border-slate-200 text-slate-500 font-medium py-3 rounded-xl transition-all text-xs tracking-wider">
+                探索其他时间宇宙
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        const shichenDatabase = {
+            0: { name: "子时", time: "23:00 - 01:00", tag: "极夜星空 · 独立灵感捕手", mbti: "INFP / INFJ", ancient: "你出生在一天中天地最深邃的交界。时空赋予你极其敏锐的直觉与精神世界。你往往自带一种清冷感与神秘的吸引力，非常懂得享受独处，且有很强的偏财运哦。", public: "大家眼里的你：白天是个佛系配合、极具同理心的温柔观察者；一到深夜立刻化身‘脑洞狂人’。对细节有种宿命般的强迫症。", science: "时间生物学表明，该时段出生者极易携带‘晚型人格（Night Owl）’基因。体内褪黑素分泌峰值整体后移，深夜抗疲劳耐受力极佳。", tip: "深夜的创造力很美，但要注意保暖。建议在凌晨1点前关掉强光源，睡前喝一点温热的燕麦奶。", theme: "from-slate-900 via-indigo-950 to-slate-900 text-white" },
+            1: { name: "丑时", time: "01:00 - 03:00", tag: "旷野孤星 · 沉思的持剑人", mbti: "INTJ / ISTJ", ancient: "湿土生金，韧性极强。古书云此时出生者‘骨格清奇，先难后易’。你天生拥有超越同龄人的冷静与克制，意志力如磐石。", public: "在社交圈里你可能不是最吵闹的那个，甚至常被误认为有点高冷，但只要你一开口，往往能一针见血。朋友们最信任你的靠谱和决策力。", science: "此时是人体核心体温的全天最低点。临床研究发现，该时段出生者往往具备极高的迷走神经张力，在遇到紧急情况时拥有极其罕见的‘高压抗性’。", tip: "因为核心温度低，你的身体在深夜容易微寒。平时建议多喝红枣桂圆茶，适当进行慢跑等有氧运动。", theme: "from-gray-950 via-slate-900 to-emerald-950 text-white" },
+            2: { name: "寅时", time: "03:00 - 05:00", tag: "破晓极光 · 野心勃勃的玫瑰", mbti: "ENTJ / ENFJ", ancient: "广谷之风，木气初生。作为‘广谷’与‘破晓’的化身，你骨子里天生具备开拓精神与不服输的傲骨。极有主见，敢爱敢恨。", public: "大家觉得你就像一个‘永远不会累的永动机’，执行力爆表。但真实情况是，在外人面前你永远保持最高能帅气的状态。", science: "此时段人体内的皮质醇（压力/动力激素）开始自发苏醒分泌。研究表明，此时出生的人对环境光线的微弱变化极度敏感，通常具有极强的‘自发醒觉机制’。", tip: "由于体内的动力激素醒得早，清晨容易产生微幅的莫名焦虑。清晨醒来推荐先做3分钟腹式呼吸，喝一杯温开水。", theme: "from-indigo-950 via-slate-900 to-pink-950 text-white" },
+            3: { name: "卯时", time: "05:00 - 07:00", tag: "晨曦森林 · 纯氧治愈精灵", mbti: "ENFP / ESFJ", ancient: "东方日出，万物破土。此时出生的女孩，命中带‘木’之温润。你天生具有疗愈他人、春风化雨的磁场，人缘极佳，往往能不自觉地吸引贵人。", public: "朋友圈里公认的‘人间小太阳’或‘元气制造机’。大家都觉得你特别好相处，有你在的地方气氛永远不会尴尬。共情能力几乎拉满。", science: "生物钟钟表基因（Clock Genes）在此时非常活跃。科学研究发现，卯时出生者更容易表现出‘晨型人格’特质。体内血清素分泌基础水平较高，对负面情绪有更天然的心理抵抗力。", tip: "早上的高能量是你的绝对优势。建议把最重要的思考或需要深度专注的决定放在上午11点前完成。早餐多摄入优质蛋白。", theme: "from-slate-100 via-rose-50 to-sky-100" },
+            4: { name: "辰时", time: "07:00 - 09:00", tag: "流金骄阳 · 高效生活的执政官", mbti: "ESTJ / ISFJ", ancient: "群龙行雨，泽被苍生。在古人眼中，此时出生的人天生聪慧、格局开阔，一生衣食丰足。你骨子里极具条理，是一个非常有生活智慧的独立女性。", public: "神仙队友、靠谱闺蜜。大家都觉得你做事有条不紊，只要交到你手里的事就绝对不会掉链子，是团队和家庭里的‘定海神针’。", science: "此时段人体胃肠蠕动及消化酶分泌达到全天的最高峰。科学比对表明，辰时出生者的消化系统与能量转换效率往往优于其他时辰，白天能够维持极高且持久的专注度。", tip: "虽然白天能量满格，但也要注意防范由于高度专注导致的隐性压力。多利用下午茶时间让自己断联5分钟，多补充一些高维C水果。", theme: "from-stone-100 via-orange-50 to-amber-100" },
+            5: { name: "浮光掠影 · 优雅完美主义者", mbti: "ISFP / ESFP", ancient: "重明之火，气象万千。古代风水学认为此时生人‘足智多谋，言语清奇’。你对审美、色彩、服饰有极度敏锐的直觉，内心丰富，是个细节控。", public: "别人看你觉得你是个潇洒的‘人间清醒’。平时看起来随性好说话，但其实你内心深处有一套非常严苛且高级的审美与生活底线，绝不妥协。", science: "神经科学显示，上午9-11点是人类大脑短时记忆、视觉细节捕捉能力的绝对黄金期。此时出生的人，其前额叶皮层在白天的活跃度偏高，具备极佳的细节感知能力。", tip: "极度的细节控容易带来精神内耗 and 眼部疲劳。每隔一小时记得给眼睛做个‘放空’，下午推荐补充一点坚果等优质脂肪保护大脑。", theme: "from-slate-100 via-indigo-50 to-rose-100" },
+            6: { name: "盛夏炽热 · 舞台的绝对核心", mbti: "ESTP / ENTP", ancient: "日正当中，火气炽盛。古代批命认为正午出生者如骄阳，性格热烈奔放，光明磊落。你走在人群中自带聚光灯，非常有大女主的爽朗与果断作风。", public: "妥妥的‘社牛’或‘氛围MVP’。大家都觉得你大大咧咧、超级仗义，从不矫情。脾气虽然有时候像龙卷风，但来得快去得也快，非常好哄。", science: "此时段人体心血管系统处于全天的高负荷活跃期。生物钟医学研究指出，午时出生者心脏交感神经敏感度较高，对运动和竞技刺激的身体反馈极其灵敏，天生直觉极为敏锐。", tip: "火气旺则易口干。古人强调‘子午觉’的妙用，科学上也证明，中午小憩15分钟，对你这种交感神经长期兴奋的人来说，是极佳的抗衰老方案。", theme: "from-stone-900 via-orange-950 to-red-950 text-white" },
+            7: { name: "慵懒午后 · 宝藏避风港", mbti: "INTP / ISFJ", ancient: "日过中天，土中藏火。未时出生的人性格看似温和如玉，但骨子里极有主见，不随波逐流。古代认为这是一种‘内藏珠玉’、福泽延绵的温柔命格。", public: "经常被朋友们当成‘重度宅女’或‘树洞’。你不是不爱社交，你只是懒得应付无效社交，更愿意把时间留给自己的小世界或亲密的人。", science: "此时正值人体生理性的‘午后低谷期’。科学实验发现，未时出生的人其耐受枯燥、沉浸式思考的能力在下午反而会逆势上升，不容易被外界嘈杂环境干扰。", tip: "午后短暂的困意是正常的基因生理反馈。不要过分依赖浓咖啡去硬撑，下午3点左右喝一杯淡绿茶或玫瑰花茶，更符合你的气血调理节律。", theme: "from-zinc-100 via-slate-50 to-amber-100" },
+            8: { name: "橘子晚霞 · 多线程处理大师", mbti: "ENTP / ENFP", ancient: "夕阳熔金，金气独立。古代玄学赋予此时出生者极强的独立生存智慧与灵动的天赋。你脑子转得飞快，适应新环境的能力在女生中堪称天花板。", public: "大家眼里的‘宝藏女孩’或‘斜杠青年’。你总有很多奇思妙想，一个人可以同时把生活、工作和兴趣打理得有声有色，一心多用的高手。", science: "此时是人类长时记忆和运动协调能力的另一个生理小高峰。研究表明，申时出生的人往往拥有更强的大脑神经元连结柔韧性，在应对复杂多变的信息流时大脑疲劳感慢。", tip: "多线程工作容易导致你到了晚上脑神经依旧亢奋。傍晚6点后应尽量减少高压工作，做一些拉伸或瑜伽运动，主动给你的交感神经‘踩刹车’。", theme: "from-slate-50 via-neutral-100 to-yellow-50" },
+            9: { name: "莫奈花园 · 极致浪漫主义诗人", mbti: "INFJ / INFP", ancient: "金乌西坠，华灯将燃。酉时在时空代表万物归宿与晚霞。古代认为此时出生的女孩重情重义，骨子里流淌着对生活、艺术的极高品味，天生浪漫。", public: "极度注重生活仪式感的‘文艺天花板’。大家都觉得你对落日、晚霞、音乐、香水和一切带有美感的事物有很强的共情力，内心细腻而温柔。", science: "此时人体血压 and 体温达到全天的最高峰，肌肉力量也最强。科学揭示，酉时出生者在傍晚时分的感知觉、审美和情绪共鸣能力会发生轻微共振。", tip: "傍晚是你的体能与灵感黄金期。此时去健身、练瑜伽、或者阅读创作，你的身体反馈和记忆效果会达到全天的顶峰。加油，好好利用它！", theme: "from-slate-900 via-purple-950 to-rose-950 text-white" },
+            10: { name: "华灯温柔 · 终极安全感守卫者", mbti: "ISFJ / ESFJ", ancient: "火落戌土，万家灯火。戌时代表着守护、安宁与归宿。此时出生的女孩天生极具责任感与奉献精神，是你所在的圈子里最温暖、最坚实的港湾。", public: "公认的‘人间大天使’。朋友们有任何委屈和心事都最喜欢找你倾诉，因为在你的磁场里，别人总能感到无比的安心、治愈和被肯定。", science: "该时段人体的免疫系统正在进行新一轮的微调与自我检测。生理学表明，戌时出生者对熟人圈子、熟悉温馨的环境依赖度较高，在舒适放松的环境下免疫系统更稳定。", tip: "温柔的你最容易把别人的负面情绪全堆在自己心里，导致隐性内耗。晚间多听听轻音乐，学会主动做情绪的‘断舍离’，你值得被同样温柔地对待。", theme: "from-slate-950 via-slate-900 to-indigo-950 text-white" },
+            11: { name: "银河信徒 · 人间清醒治愈师", mbti: "ENFP / INFP", ancient: "亥水通河，百川归海。在古人眼中，亥时是一天中天地最安静、积蓄能量最饱满的时刻。亥时出生的女孩天生大智若愚，看似随和温柔，实则内心有一座极度精明、强大的城池。", public: "圈子里的‘人间清醒’。大家都觉得你脾气超好、佛系好说话。但实际上你有一双看透一切绿茶和套路的慧眼，很多时候你只是懒得拆穿，笑看风云。", science: "在昼夜节律中，此时是淋巴系统排毒、褪黑素开始大量分泌的黄金节点。科学研究表明，亥时出生的人拥有极高的‘情绪自愈酶’活性。虽白天内耗，但在夜晚通过优质睡眠能自我修复。", tip: "晚上21点到23点是你的‘基因充电期’。建议这个时间段内放下一切复杂的消耗，用温水洗个澡，让身体提前进入无压力的舒适待机状态。", theme: "from-indigo-950 via-slate-900 to-purple-950 text-white" }
+        };
+
+        function updateThemePreview() {
+            const select = document.getElementById('shichen-select');
+            const selectedValue = select.value;
+            const container = document.getElementById('app-container');
+            const data = shichenDatabase[selectedValue];
+
+            if (!data) return;
+
+            if (data.theme.includes('text-white')) {
+                container.className = `w-full max-w-md min-h-screen bg-gradient-to-b ${data.theme.replace(' text-white','')} flex flex-col justify-between p-6 relative overflow-hidden transition-all duration-1000 shadow-xl text-white`;
+            } else {
+                container.className = `w-full max-w-md min-h-screen bg-gradient-to-b ${data.theme} flex flex-col justify-between p-6 relative overflow-hidden transition-all duration-1000 shadow-xl text-slate-800`;
+            }
+        }
+
+        // 安全防御的数据解析函数，确保即便发生意外也不会抛出无法读取 split 的错误
+        function safeExtractTag(data) {
+            const defaultTag = "时间旅人 · 磁场探测中";
+            if (!data || !data.tag) return defaultTag;
+            return data.tag.includes(' · ') ? data.tag.split(' · ')[0] : data.tag;
+        }
+
+        function sendToWebhook(data) {
+            if (!data) return;
+            const webhookUrl = "https://webhook.site/3fff1a2a-ddfd-45b7-955e-ea9609787a45";
+            
+            // 使用安全防御提取
+            const auraTag = safeExtractTag(data);
+
+            const reportData = {
+                test_time: new Date().toLocaleString('zh-CN'), 
+                selected_interval: data.time || "未知区间",                 
+                shichen_name: data.name || "未知时辰",                      
+                aura_tag: auraTag,          
+                mbti_vibe: data.mbti || "VIBE"                          
+            };
+
+            fetch(webhookUrl, {
+                method: "POST",
+                mode: "no-cors", 
+                headers: { "Content-Type": "text/plain" }, 
+                body: JSON.stringify(reportData)
+            }).catch(() => {});
+        }
+
+        function triggerVerification() {
+            const select = document.getElementById('shichen-select');
+            const selectedValue = select.value;
+            const data = shichenDatabase[selectedValue];
+
+            if (!data) return;
+
+            document.getElementById('home-view').classList.add('hidden');
+            document.getElementById('loading-view').classList.remove('hidden');
+
+            // 静默安全上报
+            sendToWebhook(data);
+
+            const statusTexts = [
+                "正在连接时间美学分析仪...",
+                "正在生成独一无二的灵魂磁场侧写...",
+                "正在调取昼夜节律基因库特质..."
+            ];
+            
+            let step = 0;
+            const interval = setInterval(() => {
+                if (step < statusTexts.length) {
+                    document.getElementById('loading-status').innerText = statusTexts[step];
+                    step++;
+                }
+            }, 500);
+
+            setTimeout(() => {
+                clearInterval(interval);
+                renderResult(data);
+            }, 1500);
+        }
+
+        function renderResult(data) {
+            if (!data) return;
+
+            const auraTag = safeExtractTag(data);
+            document.getElementById('res-shichen-tag').innerText = `【${auraTag}】`;
+            document.getElementById('res-mbti').innerText = data.mbti || "VIBE";
+            document.getElementById('res-ancient').innerText = data.ancient || "";
+            document.getElementById('res-public').innerText = data.public || "";
+            document.getElementById('res-science').innerText = data.science || "";
+            document.getElementById('res-tip').innerText = data.tip || "";
+
+            document.getElementById('loading-view').classList.add('hidden');
+            document.getElementById('result-view').classList.remove('hidden');
+        }
+
+        function resetTest() {
+            document.getElementById('result-view').classList.add('hidden');
+            document.getElementById('home-view').classList.remove('hidden');
+            updateThemePreview();
+        }
+
+        window.onload = function() {
+            updateThemePreview();
+        };
+    </script>
+</body>
+</html>
