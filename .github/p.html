@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>猫狗双全 · 寻宠之旅 | 终极科学领养心理测验</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Fredoka+One&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- 全局样式变量 --- */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #f6f8f9 0%, #e5ebee 100%);
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --text-main: #2d3748;
+            --text-muted: #718096;
+            --primary-cat: #ff9f43;
+            --primary-cat-hover: #ffb167;
+            --primary-dog: #48dbfb;
+            --primary-dog-hover: #6ad1f9;
+            --accent-color: #ff6b6b;
+            --shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+            --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        /* --- 动态主题切换 --- */
+        body.theme-cat {
+            --accent-color: var(--primary-cat);
+            --bg-gradient: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+        }
+        body.theme-dog {
+            --accent-color: var(--primary-dog);
+            --bg-gradient: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: var(--transition);
+            overflow-x: hidden;
+        }
+
+        /* --- 核心容器（毛玻璃效果） --- */
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            padding: 40px 30px;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        /* --- 进度条 --- */
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 3px;
+            margin-bottom: 30px;
+            display: none;
+            position: relative;
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--accent-color);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        /* --- 视图切换动画 --- */
+        .view {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .view.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ==========================================
+           1. 首屏分流视图 (Welcome View)
+           ========================================== */
+        .welcome-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #2d3748, #4a5568);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .welcome-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 15px;
+            margin-bottom: 35px;
+            line-height: 1.6;
+        }
+        .split-wrapper {
+            display: flex;
+            gap: 20px;
+        }
+        .split-card {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .split-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+        }
+        .split-card.cat-card:hover {
+            border-color: var(--primary-cat);
+            background: rgba(255, 159, 67, 0.05);
+        }
+        .split-card.dog-card:hover {
+            border-color: var(--primary-dog);
+            background: rgba(72, 219, 251, 0.05);
+        }
+        .split-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+            transition: transform 0.3s ease;
+        }
+        .split-card:hover .split-icon {
+            transform: scale(1.15) rotate(5deg);
+        }
+        .split-card h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+        .split-card p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* ==========================================
+           2. 答题流视图 (Quiz View)
+           ========================================== */
+        .question-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .question-text {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .option-item {
+            background: rgba(255, 255, 255, 0.5);
+            border: 2px solid transparent;
+            border-radius: 14px;
+            padding: 18px 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        .option-item:hover {
+            background: #ffffff;
+            transform: translateX(5px);
+            border-color: rgba(0, 0, 0, 0.05);
+        }
+        body.theme-cat .option-item:hover { border-color: var(--primary-cat); }
+        body.theme-dog .option-item:hover { border-color: var(--primary-dog); }
+        
+        .option-prefix {
+            width: 28px;
+            height: 28px;
+            background: rgba(0, 0, 0, 0.04);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 12px;
+            font-weight: 700;
+            transition: var(--transition);
+        }
+        body.theme-cat .option-item:hover .option-prefix { background: var(--primary-cat); color: white; }
+        body.theme-dog .option-item:hover .option-prefix { background: var(--primary-dog); color: white; }
+
+        /* ==========================================
+           3. 结果呈现视图 (Result View)
+           ========================================== */
+        .result-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .score-circle {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: conic-gradient(var(--accent-color) 0%, #edf2f7 0%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px auto;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.02);
+        }
+        .score-circle::before {
+            content: "";
+            position: absolute;
+            width: 104px;
+            height: 104px;
+            background: #ffffff;
+            border-radius: 50%;
+        }
+        .score-inner {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+        .score-number {
+            font-family: 'Fredoka One', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+        .score-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: -2px;
+        }
+        .breed-name {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .tags-container {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+        .tag {
+            font-size: 12px;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        body.theme-cat .tag { background: rgba(255, 159, 67, 0.12); color: #d35400; }
+        body.theme-dog .tag { background: rgba(72, 219, 251, 0.15); color: #2980b9; }
+
+        .analysis-box {
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+        .analysis-title {
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .warning-box {
+            background: rgba(255, 107, 107, 0.08);
+            border-left: 4px solid #ff6b6b;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .warning-title {
+            color: #e74c3c;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-btn {
+            width: 100%;
+            background: var(--text-main);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+        body.theme-cat .action-btn { background: var(--primary-cat); }
+        body.theme-dog .action-btn { background: var(--primary-dog); color: #1e272e; }
+
+        @media (max-width: 480px) {
+            .container { padding: 30px 20px; }
+            .split-wrapper { flex-direction: column; }
+            .welcome-title { font-size: 24px; }
+            .question-text { font-size: 18px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="view active" id="view-welcome">
+            <h1 class="welcome-title">猫狗双全 · 寻宠之旅</h1>
+            <p class="welcome-subtitle">基于宠物行为心理学与多维加权算法，为您量身定制最契合的毛孩子伙伴，开启一段负责任的治愈生活。</p>
+            <div class="split-wrapper">
+                <div class="split-card cat-card" onclick="startQuiz('cat')">
+                    <div class="split-icon">🐱</div>
+                    <h3>我想养猫</h3>
+                    <p>追求独立、高冷与细腻的陪伴</p>
+                </div>
+                <div class="split-card dog-card" onclick="startQuiz('dog')">
+                    <div class="split-icon">🐶</div>
+                    <h3>我想养狗</h3>
+                    <p>向往活力、忠诚与热烈的互动</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="view" id="view-quiz">
+            <div class="question-meta" id="quizMeta">DIMENSION: SPACE</div>
+            <h2 class="question-text" id="quizQuestion">您的居住空间大小是？</h2>
+            <div class="options-list" id="quizOptions"></div>
+        </div>
+
+        <div class="view" id="view-result">
+            <div class="result-header">
+                <div class="score-circle" id="scoreCircle">
+                    <div class="score-inner">
+                        <div class="score-number" id="matchScore">0%</div>
+                        <div class="score-label">契合度</div>
+                    </div>
+                </div>
+                <h2 class="breed-name" id="breedName">宠物名称</h2>
+                <div class="tags-container" id="breedTags"></div>
+            </div>
+
+            <div class="analysis-box">
+                <div class="analysis-title">
+                    <i class="fa-solid fa-heart-pulse" style="color: var(--accent-color);"></i> 灵魂性格深度解码
+                </div>
+                <p id="breedDesc">品种性格描述...</p>
+            </div>
+
+            <div class="warning-box">
+                <div class="warning-title">
+                    <i class="fa-solid fa-triangle-exclamation"></i> 领养必知 · 避坑指南
+                </div>
+                <p id="breedPitfalls">品种致命缺点或喂养难点...</p>
+            </div>
+
+            <button class="action-btn" onclick="resetQuiz()">重新开启寻宠之旅</button>
+        </div>
+    </div>
+
+    <script>
+        /* -------------------------------------------
+           终极完全体后端数据库：包含 26 个精细宠物 Profile (猫 13 种，狗 13 种)
+           矩阵维度说明：space(空间), time(时间), budget(预算), energy(精力), shedding(掉毛), chaos(破坏力)
+           ------------------------------------------- */
+        const petDatabase = {
+            cat: [
+                {
+                    id: "ragdoll",
+                    name: "布偶猫 (Ragdoll)",
+                    scoreProfile: { space: 2, time: 4, budget: 5, energy: 2, shedding: 5, chaos: 2 },
+                    tags: ["温柔粘人", "颜值天花板", "安静温顺", "体型较大"],
+                    desc: "布偶猫是猫界出了名的“小仙女”，性格极度温顺且粘人。它们非常适合渴望高频互动、喜欢抱抱的家庭。它们对人类充满信任，能与老人和小孩极其和谐地相处。",
+                    pitfalls: "【玻璃胃与长毛灾难】肠胃极其娇贵，极易软便拉稀，对食物品质要求极高，医疗日常开销大；属于长毛猫，掉毛极为壮观，必须每天梳毛，否则全身打结会引发严重皮肤病。"
+                },
+                {
+                    id: "sphynx",
+                    name: "加拿大无毛猫 (Sphynx)",
+                    scoreProfile: { space: 1, time: 4, budget: 4, energy: 4, shedding: 1, chaos: 3 },
+                    tags: ["零掉毛", "高智商", "极度粘人", "情感细腻"],
+                    desc: "斯芬克斯无毛猫是极度聪明且充满感情的品种。由于没有毛发，它们对人类的体温有天然的依恋。它们拥有如同猴子般的灵活和狗狗般的忠诚，完全没有掉毛困扰。",
+                    pitfalls: "【皮肤油脂与极度怕冷】虽然不掉毛，但皮肤能源源不断分泌油脂，需2-3天彻底擦洗一次身体，否则床单上会留下黑色油渍；极度怕冷也怕暴晒，冬天必须全天开暖气并穿衣，极易患猫癣。"
+                },
+                {
+                    id: "lihua",
+                    name: "中华田园猫 (狸花/橘猫)",
+                    scoreProfile: { space: 2, time: 2, budget: 2, energy: 5, shedding: 3, chaos: 4 },
+                    tags: ["生存大师", "体质极强", "个性独立", "捕鼠健将"],
+                    desc: "中华田园猫历经千百年自然选择，拥有极其强大的免疫力和适应能力。它们聪明、独立，不矫情。既能展现出对主人的依赖，又能很好地安排自己的独处时间，是非常省心的选择。",
+                    pitfalls: "【精力旺盛野性难训】部分田园猫野性尚存，精力极其旺盛，容易在半夜“蹦迪跑酷”，偶尔伴随抓咬人类手脚的捕猎行为；自尊心极强，不接受强迫式互动，需要主人懂得给予独立空间。"
+                },
+                {
+                    id: "british_shorthair",
+                    name: "英国短毛猫 (British Shorthair)",
+                    scoreProfile: { space: 2, time: 2, budget: 2, energy: 1, shedding: 4, chaos: 1 },
+                    tags: ["佛系躺平", "大脸可爱", "安静独立", "极易发胖"],
+                    desc: "适应能力极强，性格温和、沉稳，极少乱叫，喜欢安静地陪伴主人。它们非常适合工作忙碌的上班族，完全可以照顾好自己的情绪。",
+                    pitfalls: "【行走的掉毛怪与心肌病风险】虽然名字叫短毛，但毛发密度极高，掉毛量大到惊人；极为贪吃，中年后极易过度肥胖导致关节受损；该品种存在先天性肥厚型心肌病（HCM）的遗传风险。"
+                },
+                {
+                    id: "siamese",
+                    name: "暹罗猫 (Siamese)",
+                    scoreProfile: { space: 2, time: 5, budget: 3, energy: 5, shedding: 2, chaos: 4 },
+                    tags: ["小狗猫", "话唠属性", "极度粘人", "智商极高"],
+                    desc: "被誉为“猫中之狗”，智商高、极度渴望主人的关注，甚至可以像狗一样用牵引绳带出去遛。它们对主人的忠诚度在猫界名列前茅。",
+                    pitfalls: "【午夜歌唱家与分离焦虑】极度爱叫，声音沙哑且穿透力极强，喜欢跟主人顶嘴，声音敏感者慎选；对主人依赖度过高，如果长期被冷落，极易患上抑郁症和分离焦虑，导致自残自拔毛。"
+                },
+                {
+                    id: "maine_coon",
+                    name: "缅因猫 (Maine Coon)",
+                    scoreProfile: { space: 5, time: 3, budget: 5, energy: 3, shedding: 5, chaos: 3 },
+                    tags: ["温柔巨人", "体型巨大", "狂野外表", "极爱玩水"],
+                    desc: "体型巨大的长毛猫，外表像狮子般狂野，内心却是个极度温柔、甚至有点胆小的小甜心。它们喜欢水，对人类及其他宠物极其友善。",
+                    pitfalls: "【巨额开销与空间黑洞】体型可达10公斤以上，猫粮消耗速度极快，猫砂盆、猫爬架等所有硬件必须买特大号或定制，医疗开销按体重收费极贵；长毛极易打结，需要耗费大量时间打理。"
+                },
+                {
+                    id: "american_shorthair",
+                    name: "美国短毛猫 (American Shorthair)",
+                    scoreProfile: { space: 2, time: 3, budget: 2, energy: 3, shedding: 3, chaos: 2 },
+                    tags: ["性格均衡", "肌肉发达", "乐观开朗", "长寿品种"],
+                    desc: "美短是全能型选手，性格极其稳定，既活泼又不过分黏人。它们身体强壮，很少生病，能够轻松融入有各种其他宠物的多宠家庭。",
+                    pitfalls: "【精力隐藏者与肥胖倾向】虽然平时很乖，但精力其实很充沛，若缺乏玩具会转而抓挠家具；特别容易中年发福，必须强制进行逗猫棒运动以维持其原本健美肌肉线条。"
+                },
+                {
+                    id: "persian",
+                    name: "波斯猫 (Persian)",
+                    scoreProfile: { space: 2, time: 3, budget: 4, energy: 1, shedding: 5, chaos: 1 },
+                    tags: ["殿堂级优雅", "王室风范", "安静温和", "拒绝运动"],
+                    desc: "波斯猫被誉为猫中王子，举手投足尽显高贵。它们声音极为柔和，大部分时间喜欢安安静静地趴在软垫上，对运动完全没有兴趣，是完美的室内静谧伴侣。",
+                    pitfalls: "【面部塌陷并发症与毛发死结】属于极端短头综合征品种，容易出现泪腺堵塞需要天天擦拭眼泪，否则会有严重泪痕；极其容易出现呼吸不顺畅；长毛极为细软，一天不梳毛就会面临毛发打结、皮肤溃烂的悲剧。"
+                },
+                {
+                    id: "begal",
+                    name: "孟加拉豹猫 (Bengal)",
+                    scoreProfile: { space: 4, time: 4, budget: 5, energy: 5, shedding: 2, chaos: 5 },
+                    tags: ["野性豹纹", "精力永动机", "智商超群", "水性极佳"],
+                    desc: "拥有宛如野生豹类的华丽斑纹，浑身充满紧致的肌肉。它们智商极高，极度自信，有着源源不断的精力，甚至极度热爱游泳和洗澡，互动感完全不输大型犬。",
+                    pitfalls: "【无休止的精力宣泄与垂直拆家】如果运动量得不到满足，它们会演化成恐怖的“垂直空间拆迁队”，能轻松跳跃上两米高的柜顶并把所有花瓶扫落；非常话唠且嗓门极大，不适合高密度合租环境。"
+                },
+                {
+                    id: "scottish_fold",
+                    name: "苏格兰折耳猫 (Scottish Fold)",
+                    scoreProfile: { space: 2, time: 3, budget: 4, energy: 2, shedding: 3, chaos: 2 },
+                    tags: ["精灵可爱", "甜美长相", "性格乖巧", "让人怜爱"],
+                    desc: "折耳猫拥有一对标志性向前折叠的耳朵和圆滚滚的大眼睛，外表甜美治愈。它们性格非常温柔，极度依赖主人，喜欢像人类一样坐立。",
+                    pitfalls: "【残酷的先天软骨发育不良】折耳特征本身就是一种名为“软骨发育不良”的基因缺陷。几乎所有折耳猫都会在生命某个阶段爆发软骨骨质增生，导致全身骨骼关节剧烈疼痛、僵硬瘫痪，需要终生依赖高昂的止痛药与软骨保健品，医疗开销无底洞。"
+                },
+                {
+                    id: "abyssinian",
+                    name: "阿比西尼亚猫 (Abyssinian)",
+                    scoreProfile: { space: 3, time: 4, budget: 3, energy: 5, shedding: 2, chaos: 3 },
+                    tags: ["行走壁画", "猫界超模", "极度好奇", "永动机"],
+                    desc: "古埃及壁画中走出来的神圣品种。身形紧致修长，性格极度开朗外向。它们对世界充满了无止境的好奇心，喜欢攀爬到房间的最高处俯瞰人类。",
+                    pitfalls: "【极度讨厌孤独与高频陪伴需求】不适合经常不在家的上班族。它们如果每天被独自关在家里超过8小时，会产生严重的心理压抑，并表现出过度舔毛导致皮肤裸露的强迫症行为。"
+                },
+                {
+                    id: "russian_blue",
+                    name: "俄罗斯蓝猫 (Russian Blue)",
+                    scoreProfile: { space: 2, time: 2, budget: 3, energy: 2, shedding: 2, chaos: 1 },
+                    tags: ["银色西装", "生性害羞", "绝对安静", "家庭专属"],
+                    desc: "披着一层带有银色光泽的华丽蓝色毛发，拥有翡翠般的绿眼睛。它们生性敏感害羞，极度安静。一旦建立信任，它们会对主人展现出近乎偏执的专一与深情。",
+                    pitfalls: "【极度抗拒环境改变与陌生人】极度胆小，家里只要有陌生人拜访就会立刻人间蒸发般藏匿起来；对家庭环境的变化（如搬家、换家具、作息改变）非常敏感，极易由于应激反应导致特发性膀胱炎和闭尿。"
+                },
+                {
+                    id: "norwegian_forest",
+                    name: "挪威森林猫 (Norwegian Forest)",
+                    scoreProfile: { space: 4, time: 3, budget: 4, energy: 3, shedding: 5, chaos: 3 },
+                    tags: ["森林之王", "自带围脖", "耐寒体质", "攀爬高手"],
+                    desc: "来自北欧冰雪神话的古老猫种。拥有厚重的双层防水毛发和无比健壮的四肢。它们性格坚韧、自信，虽然体型硕大，但对家庭成员却异常温柔体贴。",
+                    pitfalls: "【换季毛发海啸与不耐炎热】由于拥有适应北欧极寒的浓密底毛，在亚热带或温带的夏季极易中暑，必须全天开冷气；换季时的掉毛量属于“海啸级别”，清理猫毛的工作量极大。"
+                }
+            ],
+            dog: [
+                {
+                    id: "labrador",
+                    name: "拉布拉多犬 (Labrador)",
+                    scoreProfile: { space: 4, time: 4, budget: 3, energy: 4, shedding: 5, chaos: 4 },
+                    tags: ["无攻击性", "大众情人", "服从性极高", "阳光治愈"],
+                    desc: "作为世界三大无攻击性犬种之一，拉布拉多开朗、聪明且对人充满善意。服从性极高，非常容易接受社会化训练，是家庭伴侣犬的黄金标准。",
+                    pitfalls: "【恶魔成长期与疯狂掉毛】两岁前的拉布拉多被称为“拆迁办主任”，精力过于旺盛且酷爱撕咬；拥有双层毛发，一年掉两次，一次掉半年，家里的毛发会像蒲公英一样多。"
+                },
+                {
+                    id: "border_collie",
+                    name: "边境牧羊犬 (Border Collie)",
+                    scoreProfile: { space: 4, time: 5, budget: 3, energy: 5, shedding: 4, chaos: 5 },
+                    tags: ["智商第一", "眼神杀", "运动健将", "学习狂人"],
+                    desc: "犬类智商无可争议的第一名。拥有无与伦比的学习能力和对指令的理解力。它们擅长通过眼神与主人交流，能够轻松学会各种高难度飞盘动作。",
+                    pitfalls: "【心理暗战与超大运动量】如果它发现你的智商压制不住它，它就会反过来“牧”你和戏弄你；每天需要至少2小时以上的超高强度运动，一旦无法满足，会转化为极具破坏力的心理焦虑和严重拆家。"
+                },
+                {
+                    id: "french_bulldog",
+                    name: "法国斗牛犬 (French Bulldog)",
+                    scoreProfile: { space: 2, time: 3, budget: 5, energy: 2, shedding: 3, chaos: 2 },
+                    tags: ["安静不扰民", "适合公寓", "丑萌可爱", "佛系运动"],
+                    desc: "法斗性格沉稳、温和，极少吠叫，非常适合生活在城市高层公寓中。它们不需要太大的运动量，通常散步20分钟就会主动要求回家躺平。",
+                    pitfalls: "【行走的人民币/医学奇迹】由于先天短头综合征，极度怕热，夏天极易中暑，必须24小时空调伺候；皮肤褶皱多易患严重皮肤病；脊椎娇贵，医疗开销极高，不是在去宠物医院的路上，并在住院。"
+                },
+                {
+                    id: "golden_retriever",
+                    name: "金毛寻回犬 (Golden Retriever)",
+                    scoreProfile: { space: 4, time: 4, budget: 3, energy: 4, shedding: 5, chaos: 3 },
+                    tags: ["大暖男", "游泳健将", "极其友善", "耐心十足"],
+                    desc: "大名鼎鼎的“大暖男”，对人极其温柔，充满耐心，聪明且服从性极高，非常适合有老人和小孩的家庭，天生喜欢叼衔物品。",
+                    pitfalls: "【漫天飞毛与严重体味】长双层毛发掉毛量极为夸张，换季时家里像下雪；体味和口水相对较大，需要频繁打理；由于对所有人都没有戒备心，极容易被陌生人一根火腿肠直接牵走。"
+                },
+                {
+                    id: "corgi",
+                    name: "柯基犬 (Corgi)",
+                    scoreProfile: { space: 3, time: 3, budget: 3, energy: 4, shedding: 5, chaos: 3 },
+                    tags: ["大屁股短腿", "倔强性格", "活力四射", "警惕性高"],
+                    desc: "以迷人的电臀和标志性的大短腿风靡全球，性格开朗、大方，充满活力。虽然腿短，但它们其实是正统的牧羊犬，爆发力十足。",
+                    pitfalls: "【腰椎脆弱与底盘掉毛】因为腰长腿短，绝不能频繁爬楼梯或过度跳跃，极易发生脊椎腰椎间盘突出导致瘫痪；精力旺盛且嗓门极大，警惕性高容易吠叫扰民；短毛扎在衣服和沙发上极难清理。"
+                },
+                {
+                    id: "shiba_inu",
+                    name: "柴犬 (Shiba Inu)",
+                    scoreProfile: { space: 2, time: 3, budget: 3, energy: 4, shedding: 4, chaos: 3 },
+                    tags: ["表情包巨星", "极度倔强", "有洁癖", "独立如猫"],
+                    desc: "性格非常独立，甚至有点像猫。它们非常注重自身清洁，极少吠叫，表情丰富。对主人忠诚，但对陌生人保持高度的高冷和警惕。",
+                    pitfalls: "【撒手没与超级固执】具有极强的自主意识，服从性低。出门一旦不牵绳绝对“撒手没”；不想回家时会变成“拒否犬”死活拉不动；皮肤敏感，属于犬界特应性皮炎高发品种。"
+                },
+                {
+                    id: "poodle",
+                    name: "贵宾犬/泰迪 (Poodle)",
+                    scoreProfile: { space: 1, time: 4, budget: 3, energy: 3, shedding: 1, chaos: 2 },
+                    tags: ["不掉毛无体味", "智商第二", "体型娇小", "极其粘人"],
+                    desc: "智商在犬界排名第二，几乎不掉毛，也没有体味，非常适合城市高层公寓饲养。非常聪明，能迅速学会各种生活指令和作揖技巧。",
+                    pitfalls: "【精明势利与骨折高发】由于太聪明，极擅长察言观色、仗势欺人，若不严格训练极易养成骄纵、爱叫、甚至咬人的坏习惯；小型贵宾前肢骨骼极为纤细，从沙发或床上跳下极易骨折；毛发必须定期花钱去宠物店修剪美容。"
+                },
+                {
+                    id: "husky",
+                    name: "西伯利亚雪橇犬 (Husky)",
+                    scoreProfile: { space: 4, time: 4, budget: 3, energy: 5, shedding: 5, chaos: 5 },
+                    tags: ["拆迁办主任", "吵架没输过", "英帅二合一", "撒手没"],
+                    desc: "俗称“哈士奇/二哈”。拥有狼一般英俊冷酷的外表，内心却是个无可救药的搞笑艺人。它们乐天、无攻击性，脑回路清奇，能给家庭生活带来无穷的欢乐。",
+                    pitfalls: "【殿堂级拆家与绝不服从】哈士奇体内流淌着极地拉雪橇的狂暴精力，若每天不消耗其10公里以上的运动量，它们会用拆毁承重墙级别的破坏力来回馈你；毫无服从性可言，出门只要不拉紧牵引绳，瞬间蒸发。"
+                },
+                {
+                    id: "samoyed",
+                    name: "萨摩耶犬 (Samoyed)",
+                    scoreProfile: { space: 4, time: 4, budget: 4, energy: 4, shedding: 5, chaos: 4 },
+                    tags: ["微笑天使", "白毛怪兽", "性格单纯", "泥巴爱好者"],
+                    desc: "拥有治愈人心的“萨摩耶之吻”微笑面容，一身雪白蓬松的毛发宛如行走的大棉花糖。性格极其善良单纯，对任何人类都抱有绝对的信任和善意。",
+                    pitfalls: "【白毛火山喷发与泥潭轰炸机】双层雪白长毛的掉毛量在犬界封神，换季时家里的空气都是毛做的；极其热爱泥潭，下雨天出门会以自杀式的动作跳进泥坑，由于毛发极长，洗澡美容开销极其昂贵。"
+                },
+                {
+                    id: "pomeranian",
+                    name: "博美犬 (Pomeranian)",
+                    scoreProfile: { space: 1, time: 4, budget: 3, energy: 3, shedding: 4, chaos: 3 },
+                    tags: ["小狐狸外表", "机警敏捷", "体型精巧", "气场两米八"],
+                    desc: "体型娇小、步态轻盈的羽毛级萌宠。它们拥有像狐狸一样精致的面庞和机警的耳朵，虽然体型小，但自信心爆棚，对主人极度忠诚和依恋。",
+                    pitfalls: "【爱叫扰民与气管塌陷基因】极度敏感，走廊上任何风吹草动都会引发它们尖锐、高频且持续的吠叫，极其容易引发邻里纠纷；先天骨骼极其脆弱，前肢极易因从高处跳下而骨折，且是先天性气管塌陷的高发犬种。"
+                },
+                {
+                    id: "bichon",
+                    name: "比熊犬 (Bichon Frise)",
+                    scoreProfile: { space: 1, time: 4, budget: 3, energy: 2, shedding: 1, chaos: 2 },
+                    tags: ["移动棉花糖", "零掉毛", "性格极甜", "粘人狂魔"],
+                    desc: "比熊犬如同活体毛绒玩具，脑袋圆滚滚，性格黏腻甜美。它们几乎不掉毛，对过敏体质人群非常友好，乐意成为主人形影不离的贴身小挂件。",
+                    pitfalls: "【极度严重的泪痕与分离焦虑】由于泪腺结构问题，若食物稍有不慎或未天天擦拭，面部会出现两条触目的红褐色泪痕，颜值毁灭；无法忍受任何孤独，若主人离家时间过长，会疯狂焦虑、哀鸣并疯狂抓门。"
+                },
+                {
+                    id: "german_shepherd",
+                    name: "德国牧羊犬 (German Shepherd)",
+                    scoreProfile: { space: 5, time: 5, budget: 4, energy: 5, shedding: 5, chaos: 4 },
+                    tags: ["全能军警魂", "绝对忠诚", "爆棚安全感", "服从之王"],
+                    desc: "无数人的梦情犬。威武霸气，具备顶级的护卫本能和服从性。它们将保护主人和领地视为终生使命，智商极高，能够完美执行极其复杂的训练指令。",
+                    pitfalls: "【极高社会化门槛与髋关节退化】由于具备天生的护卫与防御本能，若在幼犬期未接受严格的社会化训练，极易对陌生人和其它犬类产生强烈的攻击性，在城市中属于高危禁养边缘品种；后肢髋关节发育不良（HD）是其无法逃脱的家族遗传痛。”"
+                },
+                {
+                    id: "chihuahua",
+                    name: "吉娃娃 (Chihuahua)",
+                    scoreProfile: { space: 1, time: 3, budget: 2, energy: 2, shedding: 2, chaos: 2 },
+                    tags: ["体型最小", "机警勇敢", "出行方便", "嫉妒心强"],
+                    desc: "世界上体型最小的犬种，甚至可以装进大衣口袋。它们不需要太大的室内空间和运动量，对主人的占有欲极强，会像贴身侍卫一样警惕地守护你。",
+                    pitfalls: "【敏感易怒与主动挑衅】典型的“身型如耗子，心比藏獒狂”，嫉妒心极重，一旦主人亲近其它动物，会立刻发动攻击；情绪极易激动，伴随生理性颤抖，且对陌生人极其不友好，容易发生下口咬人的情况。"
+                }
+            ]
+        };
+
+        /* -------------------------------------------
+           题库设计：6核心维度
+           ------------------------------------------- */
+        const quizQuestions = {
+            cat: [
+                { dimension: "space", text: "您目前的居住空间大约有多大？", options: [{ text: "精装单身公寓/合租房", score: 1 }, { text: "标准两居室 / 三居室", score: 3 }, { text: "豪华复式 / 自带独立大院子", score: 5 }] },
+                { dimension: "time", text: "您每天平均能够腾出多少时间全心陪伴猫咪？", options: [{ text: "终极996/出差空中飞人（很少在家）", score: 1 }, { text: "朝九晚五，周末双休（固定时间陪伴）", score: 3 }, { text: "弹性工作/居家办公/全职在家（随时待命）", score: 5 }] },
+                { dimension: "budget", text: "在养猫的经济开销上，您的预期预算是？", options: [{ text: "实用主义，精打细算科学喂养", score: 1 }, { text: "宽裕中产，定期体检加高品质进口粮", score: 3 }, { text: "矿里有矿，高端医疗保障与定制生骨肉", score: 5 }] },
+                { dimension: "energy", text: "您心目中理想的猫咪，应当具备怎样的活力？", options: [{ text: "安静如画，能陪我一起躺平睡大觉", score: 1 }, { text: "活泼开朗，会主动找我接球互动", score: 3 }, { text: "跑酷狂热分子，上房揭瓦充满野性", score: 5 }] },
+                { dimension: "shedding", text: "关于“漫天飞毛”的现象，您的心理防线是？", options: [{ text: "严重洁癖/呼吸道敏感，家里绝不能有一根毛", score: 1 }, { text: "粘毛轴不离手，衣服上粘点毛完全可以忍受", score: 3 }, { text: "已经放弃抵抗，无所谓“猫毛拌饭”", score: 5 }] },
+                { dimension: "chaos", text: "如果猫咪半夜蹦迪、拆家或偶尔抓挠家具，您的态度是？", options: [{ text: "睡眠极浅或有强迫症，需要绝对的安静与整洁", score: 1 }, { text: "会有点头疼，但愿意花时间买抓板、做服从引导", score: 3 }, { text: "它是主子它最大，拆迁办主任我也认了", score: 5 }] }
+            ],
+            dog: [
+                { dimension: "space", text: "您目前的居住空间与周边的遛狗环境如何？", options: [{ text: "小户型公寓，周边缺乏大型绿地", score: 1 }, { text: "宽敞多居室，附近有不错的宠物公园", score: 3 }, { text: "独栋别墅带封闭式私家大院子", score: 5 }] },
+                { dimension: "time", text: "您每天可以风雨无阻出门遛狗的物理时间是？", options: [{ text: "工作极忙，只能早晚凑合在小区走一圈", score: 1 }, { text: "每天雷打不动能保证 1~2 小时深度遛狗", score: 3 }, { text: "时间充裕，极度渴望每天进行长时间户外互动", score: 5 }] },
+                { dimension: "budget", text: "您对养狗的年度经济预算上限是多少？", options: [{ text: "吃饱就行，日常基本开销科学喂养", score: 1 }, { text: "科学喂养，日常美容体检与基础医疗绝不含糊", score: 3 }, { text: "氪金玩家，高级定制粮、全身保健、大病全险守护", score: 5 }] },
+                { dimension: "energy", text: "您日常的生活作息和运动习惯更偏向于？", options: [{ text: "终极御宅族，床和沙发以外的地方都是远方", score: 1 }, { text: "喜欢散步，偶尔会在周末去郊外露营踏青", score: 3 }, { text: "户外狂热者 / 马拉松 / 越野爬山爱好者", score: 5 }] },
+                { dimension: "shedding", text: "面对狗狗的体味、口水以及掉毛，您的容忍极限是？", options: [{ text: "追求精致无味，无法接受家里有任何动物气息和毛发", score: 1 }, { text: "勤打扫、按时洗澡就行，自然的动物味道可以接受", score: 3 }, { text: "完全不在乎，大自然和狗狗天生的味道最真实", score: 5 }] },
+                { dimension: "chaos", text: "当面对小狗吠叫扰民、社会化训练受挫或撕咬鞋子家具时：", options: [{ text: "喜欢完全省心听话的乖宝宝，心力交瘁时容易崩溃", score: 1 }, { text: "愿意耐心看教程，循序渐进地纠正其不良行为", score: 3 }, { text: "资深训犬爱好者，越有挑战性的狗狗我越兴奋", score: 5 }] }
+            ]
+        };
+
+        /* --- 运行状态变量 --- */
+        let currentType = "";       
+        let currentQuestionIdx = 0; 
+        let userAnswers = {};       
+
+        function startQuiz(type) {
+            currentType = type;
+            currentQuestionIdx = 0;
+            userAnswers = {};
+            
+            document.body.className = `theme-${type}`;
+            document.getElementById("view-welcome").classList.remove("active");
+            document.getElementById("view-quiz").classList.add("active");
+            document.getElementById("progressContainer").style.display = "block";
+            
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const questions = quizQuestions[currentType];
+            const currentQ = questions[currentQuestionIdx];
+            
+            const progressPercent = (currentQuestionIdx / questions.length) * 100;
+            document.getElementById("progressBar").style.width = `${progressPercent}%`;
+            
+            document.getElementById("quizMeta").innerText = `DIMENSION: ${currentQ.dimension.toUpperCase()} (${currentQuestionIdx + 1}/${questions.length})`;
+            document.getElementById("quizQuestion").innerText = currentQ.text;
+            
+            const optionsContainer = document.getElementById("quizOptions");
+            optionsContainer.innerHTML = "";
+            
+            currentQ.options.forEach((opt, idx) => {
+                const letter = String.fromCharCode(65 + idx); 
+                const optionDiv = document.createElement("div");
+                optionDiv.className = "option-item";
+                optionDiv.innerHTML = `
+                    <div class="option-prefix">${letter}</div>
+                    <div>${opt.text}</div>
+                `;
+                optionDiv.onclick = () => selectOption(currentQ.dimension, opt.score);
+                optionsContainer.appendChild(optionDiv);
+            });
+        }
+
+        function selectOption(dimension, score) {
+            userAnswers[dimension] = score;
+            currentQuestionIdx++;
+            
+            const questions = quizQuestions[currentType];
+            if (currentQuestionIdx < questions.length) {
+                const quizView = document.getElementById("view-quiz");
+                quizView.style.opacity = 0;
+                quizView.style.transform = "translateY(-10px)";
+                
+                setTimeout(() => {
+                    renderQuestion();
+                    quizView.style.opacity = 1;
+                    quizView.style.transform = "translateY(0)";
+                }, 200);
+            } else {
+                showResult();
+            }
+        }
+
+        /* -------------------------------------------
+           多维加权多属性决策算法 (MADM)
+           ------------------------------------------- */
+        function showResult() {
+            document.getElementById("progressBar").style.width = "100%";
+            document.getElementById("view-quiz").classList.remove("active");
+            
+            const breeds = petDatabase[currentType];
+
+            const calculatedBreeds = breeds.map(breed => {
+                let totalDifference = 0;
+                let dimensionsCount = 0;
+
+                for (let dimension in breed.scoreProfile) {
+                    if (userAnswers[dimension] !== undefined) {
+                        totalDifference += Math.abs(breed.scoreProfile[dimension] - userAnswers[dimension]);
+                        dimensionsCount++;
+                    }
+                }
+
+                const maxPossibleDiff = dimensionsCount * 4; 
+                let matchPercentage = Math.round(100 - (totalDifference / maxPossibleDiff) * 35);
+                
+                if (matchPercentage > 99) matchPercentage = 99;
+                if (matchPercentage < 65) matchPercentage = 65;
+
+                return {
+                    ...breed,
+                    calculatedScore: matchPercentage
+                };
+            });
+
+            // 降序排列，取最优匹配
+            calculatedBreeds.sort((a, b) => b.calculatedScore - a.calculatedScore);
+            const bestMatchBreed = calculatedBreeds[0];
+
+            document.getElementById("breedName").innerText = bestMatchBreed.name;
+            document.getElementById("breedDesc").innerText = bestMatchBreed.desc;
+            document.getElementById("breedPitfalls").innerText = bestMatchBreed.pitfalls;
+            
+            animateScoreCircle(bestMatchBreed.calculatedScore);
+
+            const tagsContainer = document.getElementById("breedTags");
+            tagsContainer.innerHTML = "";
+            bestMatchBreed.tags.forEach(tagText => {
+                const span = document.createElement("span");
+                span.className = "tag";
+                span.innerText = tagText;
+                tagsContainer.appendChild(span);
+            });
+
+            document.getElementById("view-result").classList.add("active");
+        }
+
+        function animateScoreCircle(targetScore) {
+            let currentScore = 0;
+            const scoreNumberEl = document.getElementById("matchScore");
+            const scoreCircleEl = document.getElementById("scoreCircle");
+            
+            const interval = setInterval(() => {
+                if (currentScore >= targetScore) {
+                    clearInterval(interval);
+                } else {
+                    currentScore++;
+                    scoreNumberEl.innerText = `${currentScore}%`;
+                    scoreCircleEl.style.background = `conic-gradient(var(--accent-color) ${currentScore}%, #edf2f7 ${currentScore}%)`;
+                }
+            }, 10);
+        }
+
+        function resetQuiz() {
+            document.getElementById("view-result").classList.remove("active");
+            document.getElementById("progressContainer").style.display = "none";
+            document.getElementById("view-welcome").classList.add("active");
+            document.body.className = ""; 
+        }
+    </script>
+</body>
+</html>
