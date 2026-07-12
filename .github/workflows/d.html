@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="h-full bg-zinc-950 text-zinc-100 selection:bg-emerald-500/30 selection:text-emerald-400">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>灵性与理性之镜：世界观与哲学流派倾向测试</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'PingFang SC', 'Microsoft YaHei', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'fade-in': 'fadeIn 0.6s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                          '0%': { opacity: '0', transform: 'translateY(10px)' },
+                          '100%': { opacity: '1', transform: 'translateY(0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(24, 24, 27, 1); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(63, 63, 70, 1); border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(113, 113, 122, 1); }
+    </style>
+</head>
+<body class="h-full font-sans antialiased flex flex-col justify-between overflow-x-hidden custom-scrollbar bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-zinc-950 to-black">
+
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[500px] pointer-events-none overflow-hidden blur-[120px] opacity-20">
+        <div class="absolute -top-40 left-1/4 w-[400px] h-[400px] rounded-full bg-emerald-500 animate-pulse-slow"></div>
+        <div class="absolute -top-20 right-1/4 w-[350px] h-[350px] rounded-full bg-indigo-500 animate-pulse-slow" style="animation-delay: 2s;"></div>
+    </div>
+
+    <main class="flex-grow flex items-center justify-center px-4 py-12 relative z-10 w-full max-w-3xl mx-auto">
+        
+        <section id="welcome-screen" class="w-full text-center space-y-8 animate-fade-in">
+            <div class="space-y-3">
+                <div class="inline-flex items-center gap-2 px-3 py-1 text-xs font-semibold tracking-wider text-emerald-400 uppercase rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                    <span class="flex h-2 w-2 rounded-full bg-emerald-400 animate-ping"></span>
+                    深度认知诊断镜像
+                </div>
+                <h1 class="text-4xl sm:text-5xl font-bold tracking-tight bg-gradient-to-r from-zinc-100 via-zinc-300 to-zinc-500 bg-clip-text text-transparent">
+                    世界观与哲学流派倾向测试
+                </h1>
+                <p class="text-zinc-400 text-sm sm:text-base max-w-md mx-auto leading-relaxed">
+                    卸下言语防御，步入由12个思想两难困境交织的镜像。我们将精准映射出你隐秘的灵魂色谱与深层哲学内核。
+                </p>
+            </div>
+
+            <div class="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/80 rounded-2xl p-6 text-left max-w-lg mx-auto space-y-4">
+                <h3 class="text-xs font-bold uppercase tracking-widest text-zinc-500">测试须知</h3>
+                <ul class="space-y-3 text-xs sm:text-sm text-zinc-400">
+                    <li class="flex items-start gap-2.5">
+                        <span class="text-emerald-400 mt-0.5">✦</span> 题目采用高度中性化、情境化设计，选项不具备道德好坏评判。
+                    </li>
+                    <li class="flex items-start gap-2.5">
+                        <span class="text-emerald-400 mt-0.5">✦</span> 请遵循第一本能反应作答，耗时约 3 分钟。
+                    </li>
+                    <li class="flex items-start gap-2.5">
+                        <span class="text-emerald-400 mt-0.5">✦</span> 报告最终将为你呈现包含四大双极流派色谱、名人匹配及反直觉知识的深度解答。
+                    </li>
+                </ul>
+            </div>
+
+            <div>
+                <button onclick="startQuiz()" class="group relative inline-flex items-center gap-2 px-8 py-3.5 text-sm font-semibold tracking-wide text-zinc-950 bg-zinc-100 hover:bg-zinc-200 transition-all duration-300 rounded-xl shadow-lg shadow-zinc-950/50 hover:scale-[1.02] active:scale-[0.98]">
+                    开启思想之门
+                    <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </button>
+            </div>
+        </section>
+
+        <section id="quiz-screen" class="hidden w-full bg-zinc-900/30 backdrop-blur-md border border-zinc-800/60 rounded-3xl p-6 sm:p-10 shadow-2xl space-y-8 animate-fade-in">
+            <div class="space-y-2">
+                <div class="flex justify-between items-center text-xs text-zinc-500 font-medium">
+                    <span class="uppercase tracking-widest">思想实验进行中</span>
+                    <span id="progress-text" class="font-mono text-zinc-400 bg-zinc-800/50 px-2 py-0.5 rounded">1 / 12</span>
+                </div>
+                <div class="w-full bg-zinc-800/40 h-1.5 rounded-full overflow-hidden">
+                    <div id="progress-bar" class="bg-gradient-to-r from-emerald-500 to-indigo-500 h-full w-0 transition-all duration-500 ease-out"></div>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <h2 id="question-text" class="text-lg sm:text-xl font-medium leading-relaxed text-zinc-100">
+                    加载中...
+                </h2>
+                <div id="options-container" class="grid grid-cols-1 gap-3.5">
+                    </div>
+            </div>
+        </section>
+
+        <section id="loading-screen" class="hidden w-full text-center space-y-6 py-12 animate-fade-in">
+            <div class="relative w-16 h-16 mx-auto">
+                <div class="absolute inset-0 rounded-full border-2 border-zinc-800"></div>
+                <div class="absolute inset-0 rounded-full border-2 border-t-emerald-400 border-r-transparent border-b-transparent border-l-transparent animate-spin"></div>
+            </div>
+            <div class="space-y-2">
+                <p id="loading-status" class="text-sm font-mono tracking-widest text-emerald-400 h-6">正在解构存在主义矢量...</p>
+                <p class="text-xs text-zinc-500">正在通过计分矩阵映射你的灵魂坐标，请稍候</p>
+            </div>
+        </section>
+
+        <section id="result-screen" class="hidden w-full space-y-8 animate-fade-in">
+            <div class="bg-gradient-to-br from-zinc-900 via-zinc-900 to-black border border-zinc-800/80 rounded-3xl p-6 sm:p-8 text-center space-y-4 shadow-xl relative overflow-hidden">
+                <div class="absolute -right-10 -top-10 w-40 h-40 bg-indigo-500/10 blur-2xl rounded-full pointer-events-none"></div>
+                <div class="absolute -left-10 -bottom-10 w-40 h-40 bg-emerald-500/10 blur-2xl rounded-full pointer-events-none"></div>
+                
+                <p class="text-xs font-bold uppercase tracking-widest text-zinc-500">经诊断，你的终极哲学画像为</p>
+                <h2 id="result-title" class="text-2xl sm:text-3xl font-bold tracking-tight bg-gradient-to-r from-emerald-400 via-zinc-200 to-indigo-400 bg-clip-text text-transparent">
+                    清醒而通透的乐观虚无主义者
+                </h2>
+                <div class="w-12 h-0.5 bg-zinc-800 mx-auto my-2"></div>
+                <p id="result-desc" class="text-xs sm:text-sm text-zinc-400 max-w-xl mx-auto leading-relaxed">
+                    加载专属描述中...
+                </p>
+            </div>
+
+            <div class="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/60 rounded-3xl p-6 sm:p-8 space-y-6 shadow-lg">
+                <h3 class="text-xs font-bold uppercase tracking-widest text-zinc-400 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    四大双极哲学谱系映射
+                </h3>
+                
+                <div class="space-y-4" id="spectrum-bars">
+                    </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/60 rounded-3xl p-6 space-y-4 flex flex-col justify-between">
+                    <div class="space-y-3">
+                        <h4 class="text-xs font-bold uppercase tracking-widest text-zinc-400 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                            灵魂共鸣（历史名人匹配）
+                        </h4>
+                        <div id="match-philosophers" class="space-y-3 pt-1">
+                            </div>
+                    </div>
+                </div>
+
+                <div class="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/60 rounded-3xl p-6 space-y-4">
+                    <h4 class="text-xs font-bold uppercase tracking-widest text-zinc-400 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 01-2 2h0a2 2 0 01-2-2v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                        反直觉认知突破
+                    </h4>
+                    <p id="anti-fact" class="text-xs sm:text-sm text-zinc-400 leading-relaxed bg-zinc-950/40 border border-zinc-800/50 rounded-xl p-3.5 italic">
+                        加载中...
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/60 rounded-3xl p-6 sm:p-8 space-y-4 shadow-md">
+                <h4 class="text-xs font-bold uppercase tracking-widest text-zinc-400 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                    认知科学与现代心理学显微镜
+                </h4>
+                <div id="psychology-analysis" class="text-xs sm:text-sm text-zinc-400 leading-relaxed space-y-2">
+                    </div>
+            </div>
+
+            <div class="text-center pt-2">
+                <button onclick="resetQuiz()" class="inline-flex items-center gap-2 px-6 py-2.5 text-xs font-semibold tracking-wider text-zinc-400 border border-zinc-800 hover:border-zinc-700 hover:text-zinc-200 bg-zinc-900/20 hover:bg-zinc-900/50 transition-all duration-200 rounded-xl">
+                    <svg class="w-3..5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.253 8H18"></path></svg>
+                    重塑镜像（重新测试）
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="w-full text-center py-6 border-t border-zinc-900 text-[10px] sm:text-xs text-zinc-600 font-mono tracking-widest relative z-10">
+        &copy; 2026 PHILOSOPHICAL PROFILE MIRROR • ANONYMOUS LABS
+    </footer>
+
+    <script>
+        // 1. QUESTION DATABASE (12 Deep Non-jargon Situational Dilemmas)
+        const questions = [
+            {
+                id: 1,
+                text: "当你在生活上面临一个突如其来的重大挫折时（如深造失利或项目意外破产），你的第一反应最接近：",
+                options: [
+                    { text: "迅速理清哪些是自己能掌控的，哪些只能无奈接受，努力恢复内心理智与平静。", score: { stoicism: 15 } },
+                    { text: "感到一种奇特的释然，因为从宇宙长河的角度来看，当下的成败对客观世界毫无意义。", score: { nihilism: 15 } },
+                    { text: "视其为一个空白的画板，尽管处境糟糕，但我将完全凭借自身意志去重新构筑意义。", score: { existentialism: 15 } },
+                    { text: "立刻安排一顿丰盛的大餐或约朋友宣泄，生命短暂，应优先照顾好当下的躯体快感。", score: { hedonism: 15 } }
+                ]
+            },
+            {
+                id: 2,
+                text: "如果科学家发明了一种能百分百模拟完美幸福余生的虚拟舱（无任何副作用，但记忆与经历全是假的），你会选择插上管子终老其中吗？",
+                options: [
+                    { text: "会，如果能彻底消除痛苦，获得持续最大化的舒适与愉悦，真伪并不重要。", score: { hedonism: 15 } },
+                    { text: "不会，真实的生命必须建立在客观的物理实体以及可以触摸的自然现实之上。", score: { materialism: 15 } },
+                    { text: "不会，人类存在的本质在于主动在现实的痛苦挣扎与自由选择中，亲自提炼意义。", score: { existentialism: 15 } },
+                    { text: "不会，真正的自由来自于对自己内在理智精神的审视与克制，而非沉溺于外在幻象。", score: { stoicism: 15 } }
+                ]
+            },
+            {
+                id: 3,
+                text: "假如你意外获得了一笔颠覆你当前阶层的巨额财富，以下哪一种金钱支配的核心逻辑最让你感到满足？",
+                options: [
+                    { text: "捐给研究重大疾病或环境危机的慈善基金，实现社会整体福祉与功利价值的最大化。", score: { utilitarianism: 15 } },
+                    { text: "全额配置高科技硬件、前沿重资产及实体安全网，以此获得最绝对的物质掌控感。", score: { materialism: 15 } },
+                    { text: "保障全方位的个人自由与独立，从此彻底告别任何形式的被动妥协，只为自己的绝对私利而活。", score: { egoism: 15 } },
+                    { text: "长期资助纯粹的艺术创作者或冷门人文学科，让精神与概念形态在历史中留下印记。", score: { idealism: 15 } }
+                ]
+            },
+            {
+                id: 4,
+                text: "深夜独自仰望繁星密布的无垠星空，在感知到宇宙的广袤与人类极其渺小这一物理事实时，你内心最深处的波澜是：",
+                options: [
+                    { text: "一种空前的解脱：既然大自然从未指定任何终极目标，意味着我拥有绝对的自我定义权。", score: { existentialism: 15 } },
+                    { text: "一种冷峻的确定：人类不过是碳基化学分子的偶然碰撞，我们与地上的泥土石块并无本质差异。", score: { nihilism: 15 } },
+                    { text: "一种精神的崇高：由衷感叹人类微弱而高贵的意识，竟然能盛装并理解如此浩瀚的时空。", score: { idealism: 15 } },
+                    { text: "一种笃定的安宁：认清个体在自然宏大秩序中的坐标，平静并恪守履行好自己当下的日常职责。", score: { stoicism: 15 } }
+                ]
+            },
+            {
+                id: 5,
+                text: "在一个非常关键的团队协作任务中，一位重要伙伴因个人情感原因严重拖后腿，导致工作面临整体崩盘，你会：",
+                options: [
+                    { text: "默默加班把对方未完成的工作一并承担，坚决确保集体成果最大化，从而让全员受益。", score: { utilitarianism: 15 } },
+                    { text: "立刻采取自保方案或向导师/主管申诉责任划分，我首要且唯一需要负责的对象是我自己。", score: { egoism: 15 } },
+                    { text: "保持情绪稳定，对方怎么做是无法干预的外部因素，我只用把属于我负责的事做到极致。", score: { stoicism: 15 } },
+                    { text: "虽然无奈但觉得无需过分苛求，世俗层面的成果与评估不过是一场社会建构的虚妄游戏。", score: { nihilism: 15 } }
+                ]
+            },
+            {
+                id: 6,
+                text: "如果权威天文台确凿证实“一年后地球将遭遇毁灭性天体撞击，全人类绝无幸存可能”，你将如何过完最后的一年？",
+                options: [
+                    { text: "彻底抛下所有道德与传统包袱，尽情纵享过去不敢尝试的极致感官体验与快乐。", score: { hedonism: 15 } },
+                    { text: "拒绝荒废，一如既往地按照既定意志进行深度的自我觉察，完成手头未竟的创作或思考。", score: { existentialism: 15 } },
+                    { text: "加入社区志愿保障组织，尽力抚平周围人群的恐慌，让更多人能尽可能体面、少痛苦地走完终点。", score: { utilitarianism: 15 } },
+                    { text: "精简所有的无效社交，完全退回到彻底的私人核心领域，保证最后的绝对清静和属于自己。", score: { egoism: 15 } }
+                ]
+            },
+            {
+                id: 7,
+                text: "在你的私人情感体验中，你倾向于如何解构“爱与亲密关系”的底层核心？",
+                options: [
+                    { text: "大脑特定神经递质（如多巴胺、催产素）的物化物理反应，是演化生物学用于物种繁衍的工具。", score: { materialism: 15 } },
+                    { text: "两个独立灵魂跨越物理隔阂的高维精神共振，是一种超越现实功利肉体的纯粹意识形态契合。", score: { idealism: 15 } },
+                    { text: "世上本无天然完美的契合，是两个清醒的自由个体在荒诞世界中，决定共同抗击孤独的勇敢契约。", score: { existentialism: 15 } },
+                    { text: "生命中最重要、能直接带来身心疗愈、对抗痛苦的情感资源与愉悦体验渠道。", score: { hedonism: 15 } }
+                ]
+            },
+            {
+                id: 8,
+                text: "生存极端危机环境下，最后的宝贵物资只够“一个人过上完美生活”或者“五个人极其艰难地吊命生存”，你赞同哪种分配正义？",
+                options: [
+                    { text: "平均分配，虽然大家都过得异常艰苦，但道德的首要原则是尽量减少更多人的绝对苦难总和。", score: { utilitarianism: 15 } },
+                    { text: "谁有最优的核心自救物竞竞争能力，谁就该优先获得。优胜劣汰是物质大自然冷峻客观的演进规律。", score: { materialism: 15 } },
+                    { text: "任何个体在灾难中优先确保自身的存续、自保和不被牺牲，才是最本能也是最无可厚非的选择。", score: { egoism: 15 } },
+                    { text: "无论最后采取哪种分配方式，在危机过程中不丢弃内心的理智、尊严与公正，比结果更重要。", score: { stoicism: 15 } }
+                ]
+            },
+            {
+                id: 9,
+                text: "关于“死亡”这一终点，哪一种冰冷的陈述最能契合你内心深处的直觉认知？",
+                options: [
+                    { text: "纯粹的物理死寂，大脑生物电停止运作导致意识彻底熄灭，元素重新回归大自然的原子重组。", score: { materialism: 15 } },
+                    { text: "物质躯壳的脱落，个人独立的表层意识重新融回宇宙整体的无形核心意识池，或是完成维度的跃迁。", score: { idealism: 15 } },
+                    { text: "绝对的空无，这强有力地论证了生前的一切世俗奔波都毫无意义，有与无不过是平等的泡影。", score: { nihilism: 15 } },
+                    { text: "死亡是限定性的边界，正是因为它的存在，逼迫我们在有限的光阴中必须立刻付诸行动去自我构建。", score: { existentialism: 15 } }
+                ]
+            },
+            {
+                id: 10,
+                text: "如果你偶然洞察到了某个颠覆当前社会绝大多数人共有信仰的“绝望真相”（例如：某种长线维系的温情底层全是冷冰冰的操控），你会：",
+                options: [
+                    { text: "在合适时机予以公开，无论代价多大，客观的物理现实和事实真相永远高于舒适的谎言。", score: { materialism: 15 } },
+                    { text: "选择协助隐瞒，如果这个舒适的信念外壳能有效维系社会大局稳定，并给大部分人带来实际幸福感。", score: { utilitarianism: 15 } },
+                    { text: "不公开亦不揭穿，而是利用这一信息差作为确保或提升个人生存利益与安全边界的绝对武器。", score: { egoism: 15 } },
+                    { text: "毫无波澜，因为不管是虚假的信仰还是残酷的真相，本质上都是虚妄的幻象，最终都会随风风化。", score: { nihilism: 15 } }
+                ]
+            },
+            {
+                id: 11,
+                text: "在你的审美范畴中，你认为人类最顶尖的艺术、音乐或文学创作，其最终极的价值载体应当是：",
+                options: [
+                    { text: "唤醒极致的感官波澜与纯粹的审美体验，让人在鉴赏的瞬间逃离平庸，沉浸于纯粹愉悦中。", score: { hedonism: 15 } },
+                    { text: "显化那些肉眼不可见的、绝对永恒的理想形式，成为沟通形而上学精神核心的具象桥梁。", score: { idealism: 15 } },
+                    { text: "体现人类反抗宿命与平庸命运的挣扎，是伟大的创作者在无言宇宙中烙下的主观反叛痕迹。", score: { existentialism: 15 } },
+                    { text: "帮助人们深度洞察人性的无常，提供一种在动荡中抚平杂念、重获理智克制与安宁的内向力量。", score: { stoicism: 15 } }
+                ]
+            },
+            {
+                id: 12,
+                text: "当在某些社交场合遭遇了极其不公的无端对待或言语上的挑衅冒犯时，你最本能的防御闭环倾向于：",
+                options: [
+                    { text: "坚决有力、不留情面地予以直接反击，捍卫合法的个人边界与切身尊严，绝不吞声忍让。", score: { egoism: 15 } },
+                    { text: "淡然视之，深知对方的粗暴或狭隘仅仅是他个人世界观的局限，无法对我内在精神产生一丝损耗。", score: { stoicism: 15 } },
+                    { text: "抽离情感，快速启动逻辑分析，拆解导致对方情绪失常的生理疲劳、阶层或其成长环境的物理成因。", score: { materialism: 15 } },
+                    { text: "内心浮现一丝好笑甚至荒诞感，大家都只是寿命寥寥的宇宙过客，这点琐碎摩擦在永恒的寂静前极度滑稽。", score: { nihilism: 15 } }
+                ]
+            }
+        ];
+
+        // 2. PHILOSOPHICAL CORES DATABASE (8 Primary Dimension Profiles)
+        const coreProfiles = {
+            existentialism: {
+                name: "存在主义开拓者",
+                adj: "浪漫而深邃的",
+                philosophers: [
+                    { name: "让-保罗·萨特 (Sartre)", quote: "“人是注定要自由的，因为一旦被抛入这个世界，他就要为他所做的一切承担责任。”" },
+                    { name: "阿尔贝·加缪 (Camus)", quote: "“西西弗斯因其巨石而感到幸福。迈向高处的挣扎本身，足以填满一个人的心灵。”" }
+                ],
+                psychology: "发展心理学与叙事心理学表明，积极构建“个人意义系统”（Sense-making）能显著提升心理韧性。你在面对危机时具备强大的‘创伤后成长’潜力，倾向于将苦难解构为自传中浓墨重彩的章节。然而需提防过度关注‘绝对自由’所伴生的高峰决策焦虑与精神孤独感。",
+                antiFact: "积极的存在主义者往往具有全人群中名列前茅的行动力。他们不依赖客观命运的‘救赎承诺’，而是通过直接将意志投入到具体的创造中来斩断焦虑。"
+            },
+            nihilism: {
+                name: "乐观虚无主义者",
+                adj: "通透而洒脱的",
+                philosophers: [
+                    { name: "弗里德里希·尼采 (Nietzsche)", quote: "“受苦的人没有悲观的权利。你必须成为在无意义荒原上跳舞的超人。”" },
+                    { name: "埃米尔·齐奥朗 (Cioran)", quote: "“没有一件事是真正重要的，这真是一种惊天动地的、让人想要跳舞的伟大解脱。”" }
+                ],
+                psychology: "认知心理学研究指出，适度的、非毁灭性的“乐观虚无主义”能够产生一种‘降维防御机制’，能极大抑制个体的强迫性反刍思维。当个体在主观层面彻底放下‘世界必须具有目的’的紧绷执念时，其体内的皮质醇（压力激素）水平往往出乎意料地平稳。",
+                antiFact: "真正的乐观虚无主义者往往比一般人更不容易患上长期的临床抑郁症。因为在他们眼中，一切社交尴尬、世俗失败和评判，在宏大的星系时间尺度下都显得如此微不足道，这反而构成了一种坚不可摧的心理豁免权。"
+            },
+            stoicism: {
+                name: "斯多葛派实践家",
+                adj: "理性而坚韧的",
+                philosophers: [
+                    { name: "马可·奥勒留 (Marcus Aurelius)", quote: "“你拥有控制你心灵的力量，而不是外部事件。意识到这一点，你就会找到力量。”" },
+                    { name: "路奇乌斯·塞内卡 (Seneca)", quote: "“何必为部分生活哭泣？君不见整个生命都催人泪下。唯有理智的克制方是解药。”" }
+                ],
+                psychology: "现代临床心理学中著名的认知行为疗法（CBT）以及接纳承诺疗法（ACT），其底层的逻辑根基几乎完全继承自斯多葛主义。你擅长划分‘可控’与‘不可控’，这使你在灾难面前稳如磐石。但潜在的盲区是，长期习惯于情感的‘认知隔离’可能导致共情反应出现钝化。",
+                antiFact: "斯多葛派并非冷酷无情。相反，他们推崇“消极想象”——即在脑海里提前高频演练最坏的失去，从而让他们在现实安稳时，能以远超常人的饱满热情去珍惜当下的拥有。"
+            },
+            hedonism: {
+                name: "伊壁鸠鲁式享乐者",
+                adj: "感性而自适的",
+                philosophers: [
+                    { name: "伊壁鸠鲁 (Epicurus)", quote: "“快乐是身体的无痛苦和灵魂的无纷扰。不可为了对不可得之物的渴望，而败坏了当下的丰盈。”" },
+                    { name: "阿瑞斯提普斯 (Aristippus)", quote: "“我占有快乐，而不被快乐所占有；掌控当下的体验才是明智的航行。”" }
+                ],
+                psychology: "积极心理学对“主观幸福感”（Subjective Well-being）的测定高度契合你的特征。你对即时微小感官愉悦和情绪滋养具有极其敏锐的捕捉器，能有效维持情绪基线的积极度。需要警惕的是“享乐适应效应”（Hedonic Treadmill），即阈值在频繁刺激下逐步拉高导致的阶段性空虚。",
+                antiFact: "真正经典的哲学享乐主义（如伊壁鸠鲁派）在历史上被严重妖魔化了。它倡导的不是无节制的纵欲，而是极其自律的极简生活（如水、大麦饼与挚友），通过规避高风险的奢求来达成最长效的‘无痛苦状态’。"
+            },
+            materialism: {
+                name: "科学唯物论学者",
+                adj: "客观而求真的",
+                philosophers: [
+                    { name: "卡尔·马克思 (Karl Marx)", quote: "“哲学家们只是用不同的方式解释世界，而问题在于改变世界。”" },
+                    { name: "德谟克利特 (Democritus)", quote: "“除了原子和虚空，别无他物；其余一切都只是主观的意见。”" }
+                ],
+                psychology: "演化心理学与行为神经科学是你的天然底色。倾向于唯物论的个体在遭遇挫折或情绪障碍时，极少陷入内耗式的玄学冥想，而是展现出极高的物理行动力，倾向于通过改善睡眠、调整物理环境、增加运动或药物调节等高度实证、具体的物理方式来精准解决问题。",
+                antiFact: "科学唯物主义者往往拥有最纯粹的终极浪漫。正如天文学家卡尔·萨根所言，当唯物主义者清醒认识到自己身上的每一个原子都源自百亿年前超新星爆发的星尘时，他们会对纯粹物质宇宙产生一种极其震撼的崇高敬畏感。"
+            },
+            idealism: {
+                name: "精神唯心守望者",
+                adj: "超然而纯粹的",
+                philosophers: [
+                    { name: "柏拉图 (Plato)", quote: "“思想是灵魂的自我谈话。物理世界不过是永恒理念世界的一个残缺投影。”" },
+                    { name: "王阳明 (Wang Yangming)", quote: "“心外无物，心外无理。此心光明，亦复何言。”" }
+                ],
+                psychology: "你的内核完美映射了认知显化理论。倾向于唯心主义的个体拥有极其强大的“精神信念感”与“叙事重构能力”。在物理环境极度匮乏、甚至面临严重外在欺压时，你能够凭借内化的高尚概念与坚定心力维持其尊严，展现出极其惊人的‘精神免疫力’。",
+                antiFact: "主观唯心主义（心外无物）在现代前沿的量子力学哥本哈根诠释中找到了某种奇妙的数学镜像——‘观测者效应’表明，没有意识的测量参与，物理粒子在宏观上可能仅仅是一段概率波，意识确实参与了现实的‘坍缩’。"
+            },
+            utilitarianism: {
+                name: "理性利他主义者",
+                adj: "博爱而利他的",
+                philosophers: [
+                    { name: "杰里米·边沁 (Bentham)", quote: "“最大多数人的最大幸福，是衡量道德与立法对错的最高基石。”" },
+                    { name: "约翰·斯图尔特·密尔 (John Stuart Mill)", quote: "“做一个痛苦的人，胜过做一只快乐的猪；道德的本质在于优化集体福祉的品质。”" }
+                ],
+                psychology: "社会心理学研究表明，“有效利他”能够强烈激活人类大脑中脑边缘的多巴胺奖赏通路（Warm-glow effect）。你在推动群体利益和协助他人时能获得深刻、持久的内在满足。但过度将集体担子背在肩上，容易让你高频陷入“同理心疲劳”（Compassion Fatigue）。",
+                antiFact: "功利主义（Utilitarianism）在日常中文语境中常被降维误解为“自私自利、不择手段”，但实际上纯粹的哲学功利主义对道德的要求近乎圣人：它要求你在计算利益总和时，必须将你自己的利益和任何一个完全陌生人的利益放置在绝对平等的权重天平上。"
+            },
+            egoism: {
+                name: "理性利己觉醒者",
+                adj: "独立而坚定的",
+                philosophers: [
+                    { name: "安·兰德 (Ayn Rand)", quote: "“人是一个端点，他的道德目的就是追求他自己的幸福。他不应该是别人的牺牲品，也不应把别人当作牺牲品。”" },
+                    { name: "杨朱 (Yang Zhu)", quote: "“损一毫利天下不与也，悉天下奉一身不取也。人人不损一毫，人人不利天下，天下治矣。”" }
+                ],
+                psychology: "心理学中的“强边界意识”与自决理论（Self-Determination Theory）在你的身上得到了极致体现。高度倾向于理性自我负责的你，具备近乎天然的“群体压力免疫力”与“反社会PUA体制能力”。你的情绪内核极度稳定，不容易被道德绑架。但需注意防范社会隔离带来的长线社交阻力。",
+                antiFact: "理性的利己主义者通常是现实中最靠谱、最健康的卓越合作者。因为他们深知，不越界、不进行情绪寄生、不进行道德绑架，且彼此尊重各方的核心交换利益，才是能够实现自身长期利益最大化的最佳也是最纯粹的策略。"
+            }
+        };
+
+        // 3. RUNTIME STATE VARIABLES
+        let currentQuestionIndex = 0;
+        let userScores = {
+            existentialism: 0, nihilism: 0, stoicism: 0, hedonism: 0,
+            materialism: 0, idealism: 0, utilitarianism: 0, egoism: 0
+        };
+
+        // 4. ROUTER / SCREEN CONTROL ENGINE
+        function showScreen(screenId) {
+            ['welcome-screen', 'quiz-screen', 'loading-screen', 'result-screen'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(screenId).classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 5. QUIZ LOGIC
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            userScores = { existentialism: 0, nihilism: 0, stoicism: 0, hedonism: 0, materialism: 0, idealism: 0, utilitarianism: 0, egoism: 0 };
+            showScreen('quiz-screen');
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = questions[currentQuestionIndex];
+            
+            // Progress Update
+            const total = questions.length;
+            document.getElementById('progress-text').innerText = `${currentQuestionIndex + 1} / ${total}`;
+            document.getElementById('progress-bar').style.width = `${((currentQuestionIndex + 1) / total) * 100}%`;
+            
+            // Text Update
+            document.getElementById('question-text').innerText = q.text;
+            
+            // Options Rendering
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            
+            // Shuffle option display slightly to remove order bias
+            q.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 sm:p-5 text-xs sm:text-sm text-zinc-300 bg-zinc-900/60 hover:bg-zinc-800/80 border border-zinc-800/80 hover:border-emerald-500/40 rounded-xl transition-all duration-300 group flex items-start gap-4 hover:translate-x-1";
+                
+                const alpha = ['A', 'B', 'C', 'D'][index];
+                btn.innerHTML = `
+                    <span class="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-md bg-zinc-800 text-zinc-400 group-hover:bg-emerald-500/20 group-hover:text-emerald-400 font-mono text-xs font-semibold transition-colors">${alpha}</span>
+                    <span class="leading-relaxed">${opt.text}</span>
+                `;
+                
+                btn.onclick = () => handleOptionSelect(opt.score);
+                container.appendChild(btn);
+            });
+        }
+
+        function handleOptionSelect(scoreWeights) {
+            // Add scores
+            for (let trait in scoreWeights) {
+                if (userScores.hasOwnProperty(trait)) {
+                    userScores[trait] += scoreWeights[trait];
+                }
+            }
+            
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                // Soft transition
+                const screen = document.getElementById('quiz-screen');
+                screen.classList.remove('animate-fade-in');
+                void screen.offsetWidth; // Trigger reflow
+                screen.classList.add('animate-fade-in');
+                renderQuestion();
+            } else {
+                runRitualScreen();
+            }
+        }
+
+        // 6. RITUAL LOADING CEREMONY
+        function runRitualScreen() {
+            showScreen('loading-screen');
+            const statuses = [
+                "正在解构思想极谱矢量...",
+                "正在校准道德与因果罗盘...",
+                "正在检索历史先哲思维图谱...",
+                "正在凝聚专属复合哲学画像..."
+            ];
+            
+            let i = 0;
+            const interval = setInterval(() => {
+                if (i < statuses.length) {
+                    document.getElementById('loading-status').innerText = statuses[i];
+                    i++;
+                } else {
+                    clearInterval(interval);
+                    calculateAndShowResults();
+                }
+            }, 650);
+        }
+
+        // 7. COMPLEX ALGORITHM & SPECTRUM COMPILATION
+        function calculateAndShowResults() {
+            // Sort traits to find Primary and Secondary
+            let traitArray = Object.keys(userScores).map(key => ({ trait: key, val: userScores[key] }));
+            traitArray.sort((a, b) => b.val - a.val);
+            
+            let top1 = traitArray[0].trait;
+            let top2 = traitArray[1].trait;
+            
+            // Build Composite Persona Label
+            const finalTitle = coreProfiles[top2].adj + coreProfiles[top1].name;
+            document.getElementById('result-title').innerText = finalTitle;
+            
+            // Load base content from Primary Core
+            const primaryProfile = coreProfiles[top1];
+            document.getElementById('result-desc').innerText = `你的底层思维操作系统深深扎根于【${primaryProfile.name}】。在日常决策、价值过滤和面对虚无或灾难时，你的核心代码呈现出 ${primaryProfile.adj.replace("的","")} 姿态。你与【${coreProfiles[top2].name}】的交叉特质，赋予了你绝不流于教条的开阔认知视野。`;
+            document.getElementById('anti-fact').innerText = primaryProfile.antiFact;
+            document.getElementById('psychology-analysis').innerHTML = `<p>${primaryProfile.psychology}</p>`;
+            
+            // Render Philosopher Matches
+            const philContainer = document.getElementById('match-philosophers');
+            philContainer.innerHTML = '';
+            primaryProfile.philosophers.forEach(p => {
+                const el = document.createElement('div');
+                el.className = "border-l-2 border-emerald-500/40 pl-3 py-1 space-y-1 bg-zinc-950/20 p-2.5 rounded-r-xl border-t border-r border-b border-zinc-900";
+                el.innerHTML = `
+                    <h5 class="text-xs font-semibold text-zinc-300 font-mono">${p.name}</h5>
+                    <p class="text-[11px] sm:text-xs text-zinc-400 italic leading-relaxed">${p.quote}</p>
+                `;
+                philContainer.appendChild(el);
+            });
+            
+            // Calculate 4 Dual-Polar Spectrum Percentages
+            // 1. Existentialism vs Nihilism
+            const p1 = calculateSpectrumPercentage(userScores.existentialism, userScores.nihilism);
+            // 2. Stoicism vs Hedonism
+            const p2 = calculateSpectrumPercentage(userScores.stoicism, userScores.hedonism);
+            // 3. Materialism vs Idealism
+            const p3 = calculateSpectrumPercentage(userScores.materialism, userScores.idealism);
+            // 4. Utilitarianism vs Egoism
+            const p4 = calculateSpectrumPercentage(userScores.utilitarianism, userScores.egoism);
+            
+            const spectrumData = [
+                { leftName: "存在主义", rightName: "虚无主义", pct: p1 },
+                { leftName: "斯多葛主义", rightName: "享乐主义", pct: p2 },
+                { leftName: "唯物主义", rightName: "唯心主义", pct: p3 },
+                { leftName: "功利/利他主义", rightName: "个人/利己主义", pct: p4 }
+            ];
+            
+            const barContainer = document.getElementById('spectrum-bars');
+            barContainer.innerHTML = '';
+            spectrumData.forEach(spec => {
+                const row = document.createElement('div');
+                row.className = "space-y-1.5";
+                row.innerHTML = `
+                    <div class="flex justify-between text-[11px] font-mono tracking-wide text-zinc-400">
+                        <span class="${spec.pct < 50 ? 'text-emerald-400 font-semibold' : ''}">${spec.leftName} (${100 - spec.pct}%)</span>
+                        <span class="${spec.pct >= 50 ? 'text-indigo-400 font-semibold' : ''}">${spec.rightName} (${spec.pct}%)</span>
+                    </div>
+                    <div class="w-full bg-zinc-950 h-3 rounded-full border border-zinc-800/80 p-0.5 relative overflow-hidden flex items-center">
+                        <div class="absolute top-0 bottom-0 left-0 bg-gradient-to-r from-emerald-500 to-indigo-500 rounded-full transition-all duration-1000" style="left: calc(${spec.pct}% - 4px); width: 8px; shadow: 0 0 8px #fff;"></div>
+                        <div class="w-full h-full bg-zinc-900/60 rounded-full relative">
+                            <div class="absolute inset-y-0 left-1/2 w-[1px] bg-zinc-800"></div>
+                        </div>
+                    </div>
+                `;
+                barContainer.appendChild(row);
+            });
+            
+            // Rout to Results Screen
+            showScreen('result-screen');
+        }
+
+        function calculateSpectrumPercentage(leftVal, rightVal) {
+            const sum = leftVal + rightVal;
+            if (sum === 0) return 50; // Neutral baseline
+            // Returns the percentage of the RIGHT value (0 = purely left, 100 = purely right)
+            return Math.round((rightVal / sum) * 100);
+        }
+
+        function resetQuiz() {
+            showScreen('welcome-screen');
+        }
+    </script>
+</body>
+</html>
