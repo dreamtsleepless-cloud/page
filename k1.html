@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>猫咪品种契合度精准匹配测试 (Cat Breed Matcher)</title>
+  <style>
+    :root {
+      --primary: #059669;
+      --primary-hover: #047857;
+      --primary-light: #d1fae5;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --radius: 14px;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 680px;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 36px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    /* 顶部进度条 */
+    .progress-bar-container {
+      width: 100%;
+      height: 6px;
+      background-color: var(--border);
+      border-radius: 999px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #10b981, #059669);
+      transition: width 0.35s ease;
+    }
+
+    /* 欢迎视图 */
+    .welcome-view {
+      text-align: center;
+    }
+
+    .welcome-view h1 {
+      font-size: 1.85rem;
+      margin-bottom: 12px;
+      color: var(--text-main);
+    }
+
+    .welcome-view p {
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+
+    .feature-tags {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    .feature-tag {
+      font-size: 0.85rem;
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      padding: 6px 14px;
+      border-radius: 20px;
+      color: #334155;
+    }
+
+    /* 题目样式 */
+    .step-indicator {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+
+    .question-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .question-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .option-card {
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      transition: all 0.2s ease;
+      background: #ffffff;
+    }
+
+    .option-card:hover {
+      border-color: #6ee7b7;
+      background-color: #f0fdf4;
+    }
+
+    .option-card.selected {
+      border-color: var(--primary);
+      background-color: var(--primary-light);
+    }
+
+    .option-card input[type="radio"] {
+      margin-top: 4px;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    .option-text h4 {
+      font-size: 1rem;
+      margin-bottom: 3px;
+      font-weight: 600;
+    }
+
+    .option-text p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* 按钮组 */
+    .btn-group {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+      margin-left: auto;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: #f1f5f9;
+      color: var(--text-main);
+    }
+
+    /* 结果视图 */
+    .result-view {
+      display: none;
+    }
+
+    .match-hero {
+      background: linear-gradient(135deg, #ecfdf5, #f0fdf4);
+      border: 1px solid #a7f3d0;
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .hero-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 12px;
+    }
+
+    .hero-name {
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: #064e3b;
+    }
+
+    .hero-latin {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 400;
+      margin-left: 8px;
+    }
+
+    .match-badge {
+      background: #047857;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .tag-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .tag {
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid #a7f3d0;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      color: #065f46;
+      font-weight: 500;
+    }
+
+    .result-section-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-top: 14px;
+      margin-bottom: 4px;
+      color: #064e3b;
+    }
+
+    .result-desc {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #374151;
+    }
+
+    .warning-box {
+      margin-top: 14px;
+      background: #fffbeb;
+      border-left: 4px solid #f59e0b;
+      padding: 10px 14px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      color: #92400e;
+      line-height: 1.5;
+    }
+
+    /* 备选猫种 */
+    .runner-ups-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .runner-ups-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .runner-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      background: #fdfdfe;
+    }
+
+    .runner-card h5 {
+      font-size: 1rem;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .runner-score {
+      font-size: 0.85rem;
+      color: var(--primary);
+    }
+
+    .runner-card p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+      .runner-ups-grid {
+        grid-template-columns: 1fr;
+      }
+      .hero-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- 进度条 -->
+    <div id="progress-container" class="progress-bar-container hidden">
+      <div id="progress-bar" class="progress-bar"></div>
+    </div>
+
+    <!-- 1. 欢迎页 -->
+    <div id="welcome-view" class="welcome-view">
+      <h1>猫咪品种契合度精准匹配测试</h1>
+      <p>猫咪不仅有长短毛之分，更有截然不同的“狗系黏人/高冷独立”、“低敏/无毛”、“话痨/静音”以及“活动攀爬需求”。通过 7 个多维生活指标，为你找到最小颗粒度的最契合猫种。</p>
+      
+      <div class="feature-tags">
+        <span class="feature-tag">🧬 掉毛度与低敏 (Fel d 1)</span>
+        <span class="feature-tag">💬 话痨程度与静音偏好</span>
+        <span class="feature-tag">🫂 狗系黏人 vs 高冷独立</span>
+        <span class="feature-tag">⚠️ 遗传易感性与避坑指南</span>
+      </div>
+
+      <button class="btn btn-primary" onclick="startQuiz()">开始测试</button>
+    </div>
+
+    <!-- 2. 问卷答题区 -->
+    <div id="quiz-view" class="hidden">
+      <div id="step-indicator" class="step-indicator">第 1 题 / 共 7 题</div>
+      <h2 id="question-title" class="question-title">题目加载中...</h2>
+      <p id="question-desc" class="question-desc">补充说明</p>
+
+      <div id="options-container" class="options-grid">
+        <!-- 选项动态插入 -->
+      </div>
+
+      <div class="btn-group">
+        <button id="prev-btn" class="btn btn-secondary hidden" onclick="prevQuestion()">上一题</button>
+        <button id="next-btn" class="btn btn-primary" onclick="nextQuestion()">下一题</button>
+      </div>
+    </div>
+
+    <!-- 3. 结果呈现区 -->
+    <div id="result-view" class="result-view">
+      <h2 style="font-size: 1.4rem; margin-bottom: 16px;">测试完成！最契合你的猫咪品种是：</h2>
+      
+      <!-- 主推猫种 -->
+      <div class="match-hero">
+        <div class="hero-header">
+          <div>
+            <span id="best-name" class="hero-name">猫种名称</span>
+            <span id="best-latin" class="hero-latin">English Name</span>
+          </div>
+          <span id="best-score" class="match-badge">98% 契合度</span>
+        </div>
+
+        <div id="best-tags" class="tag-container"></div>
+
+        <div class="result-section-title">✨ 为什么适合你？</div>
+        <p id="best-reason" class="result-desc"></p>
+
+        <div class="result-section-title">💡 关键养护与相处特征</div>
+        <p id="best-care" class="result-desc"></p>
+
+        <div id="best-warning" class="warning-box"></div>
+      </div>
+
+      <!-- 备选猫种 -->
+      <div class="runner-ups-title">备选匹配猫种（契合度相近）</div>
+      <div id="runners-container" class="runner-ups-grid"></div>
+
+      <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="restartQuiz()">重新测试</button>
+    </div>
+  </div>
+
+  <script>
+    // 问卷问题体系 (针对猫科特性的 7 维度)
+    const questions = [
+      {
+        id: "shedding_allergy",
+        title: "你对猫毛脱落、日常打扫及过敏的容忍度如何？",
+        desc: "对猫毛过敏常由猫唾液/皮屑中的 Fel d 1 蛋白引起；不同猫种掉毛量差异极大。",
+        options: [
+          { label: "极度抗拒掉毛 / 有过敏隐患 / 必须低敏或无毛", desc: "不能接受衣服家具沾毛，或家庭成员呼吸道敏感", val: 1 },
+          { label: "接受适量掉毛，但毛发打理要省心", desc: "短毛好梳理即可，定期戴手套撸毛或吸尘可以接受", val: 2 },
+          { label: "极度迷恋丰厚被毛，完全不介意满屋飞毛", desc: "就是喜欢爆毛手感，愿意备好吸尘器和粘毛器", val: 3 }
+        ]
+      },
+      {
+        id: "clinginess",
+        title: "你理想中与猫咪的互动与亲密模式是怎样的？",
+        desc: "不同猫种在性格基因上有显著差异：有的如狗般寸步不离，有的自主独立。",
+        options: [
+          { label: "“狗系”黏人狂魔：走哪跟哪、要抱抱、睡觉贴贴", desc: "渴望极高情感反馈，希望猫咪主动寻求身体接触", val: 1 },
+          { label: "温和陪伴：静静待在同一个房间，适度互动", desc: "不喜欢太黏人打扰工作，但在旁边趴着会感到治愈", val: 2 },
+          { label: "高冷独立：互不打扰的室友，尊重彼此边界", desc: "不主动求抱，性格淡定，只有它想来时才理你", val: 3 }
+        ]
+      },
+      {
+        id: "activity_energy",
+        title: "你希望猫咪的活力水平与日常活动方式是？",
+        desc: "活动量直接决定了它是否会“跑酷上房揭瓦”以及对垂直空间（爬架）的需求。",
+        options: [
+          { label: "静止地毯 / 佛系躺平", desc: "多数时间在睡觉或晒太阳，动作从容，不爱飞檐走壁", val: 1 },
+          { label: "适中活力 / 每天玩耍 15-30 分钟", desc: "偶尔拿逗猫棒追逐一番，平常能自娱自乐或安分休息", val: 2 },
+          { label: "跑酷永动机 / 攀爬健将", desc: "身手极其敏捷，喜欢跳到冰箱顶、门梁上，精力充沛", val: 3 }
+        ]
+      },
+      {
+        id: "vocalization",
+        title: "你对猫咪叫声与“话痨”程度的偏好？",
+        desc: "有些猫种是公认的话痨聊天机，有些则终日保持静音。",
+        options: [
+          { label: "追求极致安静 / 几乎不叫", desc: "自己需要安静专注，或者对持续叫声容易感到烦躁", val: 1 },
+          { label: "偶尔喵喵 / 讨食或求摸时叫两声", desc: "正常叫声交流，频率不高且声音柔和", val: 2 },
+          { label: "喜欢“话痨机” / 乐于跟猫有来有回对喵", desc: "叫声响亮多变，喜欢随时跟你说话反馈", val: 3 }
+        ]
+      },
+      {
+        id: "alone_time",
+        title: "工作日白天猫咪大概需要独自在家多久？",
+        desc: "部分高依恋感猫种容易患上分离焦虑，导致乱尿或过度舔毛。",
+        options: [
+          { label: "较少独处（< 4 小时 / 居家办公 / 全天有人）", desc: "白天几乎随时有人陪伴，能够满足高关注需求", val: 1 },
+          { label: "标准上班族（6 - 9 小时独自在家）", desc: "白天无人在家，猫咪需自行睡觉打发时间", val: 2 },
+          { label: "经常加班出差 / 独处时间较长（> 9 小时）", desc: "作息不稳定，需要心理承受力极强、极具安全感的品种", val: 3 }
+        ]
+      },
+      {
+        id: "grooming_effort",
+        title: "你愿意在猫咪日常洗护与精细打理上投入多少精力？",
+        desc: "长毛打结、面部扁平泪痕、无毛猫出油等均需要专门的周期性护理。",
+        options: [
+          { label: "极简省心：只想偶尔梳毛，身体皮实耐糙", desc: "希望猫咪自己清洁，尽量少生病、不需要复杂面部/皮肤护理", val: 1 },
+          { label: "愿意每天花 5-10 分钟简单梳毛或擦拭", desc: "常规梳毛或偶尔清洁泪痕/耳朵均可接受", val: 2 },
+          { label: "乐意精细养护：深层洗护、擦油擦褶皱或精修长毛", desc: "不嫌麻烦，愿意定期护理特殊皮肤或厚重长毛", val: 3 }
+        ]
+      },
+      {
+        id: "size_preference",
+        title: "你对猫咪体型与外貌风格的偏好？",
+        desc: "大型猫吃得多、排泄多、需要特大号猫砂盆与加厚爬架。",
+        options: [
+          { label: "中小型精致 / 身形轻盈灵动", desc: "体重通常 2.5 - 4.5 kg，小巧抱起轻便", val: 1 },
+          { label: "标准匀称中型（圆润结实或优美体态）", desc: "体重通常 4 - 6 kg，最常见的标准家猫骨架", val: 2 },
+          { label: "霸气大型 / 巨型猫咪骨架", desc: "体重可达 7 - 10 kg+，骨量惊人，有如小型野兽般的拥抱感", val: 3 },
+          { label: "无明确偏好，全看性格合不合拍", desc: "体型大小无所谓，关键是好相处", val: 0 }
+        ]
+      }
+    ];
+
+    // 精细化猫种数据库 (最小粒度品种及对应参数)
+    const catBreedDatabase = [
+      {
+        name: "德文卷毛猫",
+        latin: "Devon Rex",
+        size: 1, shedding: 1, cling: 1, energy: 3, vocal: 2, alone: 1, care: 1,
+        tags: ["小精灵卷毛", "几乎不掉毛", "狗系黏人", "轻盈好动"],
+        reason: "单层波浪卷毛，极少脱落，几乎没有换毛季的飞毛困扰。性格极度亲人热烈，常像鹦鹉一样蹲在主人肩膀上，被誉为‘披着猫皮的小狗’。",
+        care: "单层毛发散热快且怕冷，冬季需备好保暖小窝；大耳朵分泌物偏多，需定期使用洗耳液清洁。",
+        warning: "对主人陪伴依赖极高，且身手极度敏捷，如果长时间独处或家里没有丰富的跳跃玩具，容易感到无聊甚至焦虑。"
+      },
+      {
+        name: "斯芬克斯无毛猫",
+        latin: "Sphynx",
+        size: 2, shedding: 1, cling: 1, energy: 2, vocal: 2, alone: 1, care: 3,
+        tags: ["完全无毛", "零飞毛困扰", "极致黏人贴贴", "体感温热"],
+        reason: "完全没有毛发，彻底告别粘毛器与滚毛刷。体感温度极高，性格像孩童般黏人温柔，毫无攻击性，是追求零掉毛与深层亲密感人群的专属选择。",
+        care: "虽然免去了梳毛，但皮肤新陈代谢旺盛会分泌油脂，需要每周温水擦身或洗澡，且眼角需定期擦拭分泌物。",
+        warning: "缺乏毛发保护，极度怕冷也怕强紫外线暴晒晒伤；胃肠道代谢速度快，食量较大且便便气味相对较重。"
+      },
+      {
+        name: "英国短毛猫",
+        latin: "British Shorthair",
+        size: 2, shedding: 2, cling: 3, energy: 1, vocal: 1, alone: 3, care: 1,
+        tags: ["圆脸大发腮", "淡定佛系", "耐独处代表", "极度安静"],
+        reason: "性格极其稳重淡定，具备出色的心理抗压能力，极少无故喵喵叫。即便主人全天早出晚归上班，它也能泰然自若地自娱自乐，非常适合忙碌的都市独居者。",
+        care: "被毛浓密如毯，换毛季需要每周梳理；体质较皮实，但成年后极度不爱动，需严格控制体重防肥胖。",
+        warning: "不喜欢被人长时间强行抱在怀里，更享受‘与你待在同一空间但保持礼貌距离’。如果追求每分每秒揉抱贴贴，它可能会挣脱走开。"
+      },
+      {
+        name: "布偶猫",
+        latin: "Ragdoll",
+        size: 3, shedding: 3, cling: 1, energy: 1, vocal: 1, alone: 1, care: 2,
+        tags: ["猫界仙女", "抱起即瘫软", "极度温顺黏人", "静音无攻击性"],
+        reason: "拥有天鹅绒般丝滑的长毛和宝石蓝眼睛，被抱起时全身肌肉会放松瘫软。性格天真烂漫，极度亲近家庭成员，叫声微弱甜美，极少抓人咬人。",
+        care: "虽属于单层长毛较不易打结，但换毛期掉毛量仍可观，需定期梳理被毛；天生“玻璃胃”，换粮需十分谨慎。",
+        warning: "缺乏野外防御本能与领地意识，绝不能散养；对主人依赖极强，无法耐受长时间冷落与独处。"
+      },
+      {
+        name: "美国短毛猫",
+        latin: "American Shorthair",
+        size: 2, shedding: 2, cling: 2, energy: 2, vocal: 1, alone: 3, care: 1,
+        tags: ["虎斑精灵", "皮实好养", "适应力拉满", "全能型家猫"],
+        reason: "家猫平衡性的标杆！体格健壮肌肉线条好，极少生病娇气。既懂得陪主人互动玩耍，又能在主人忙碌时乖乖睡觉，容错率极高的新手首选。",
+        care: "短硬平滑被毛，打理难度极低，每月剪指甲、偶尔梳理死毛即可保持良好状态。",
+        warning: "天生保留较强的捕猎本能，需要每天提供适当的逗猫棒玩耍释放精力；贪吃易发腮，绝育后要注意控制体重。"
+      },
+      {
+        name: "暹罗猫",
+        latin: "Siamese",
+        size: 1, shedding: 2, cling: 1, energy: 3, vocal: 3, alone: 1, care: 1,
+        tags: ["话痨交流机", "重点色小狗", "聪明可训", "极度忠诚"],
+        reason: "猫界智商天花板之一，甚至能训练握手或衔回玩具。性格极其外向热烈，感情充沛，喜欢时刻与主人‘对话’，如果家里喜静会觉得它太吵，但喜欢互动会觉得它是绝世宝藏。",
+        care: "短毛紧贴身体，洗护打理极省心；重点色受温度影响，天冷毛色会变深（俗称糊了）。",
+        warning: "嗓门响亮且极度话痨！如果你喜欢绝对的安静，暹罗猫会让你崩溃；极度害怕孤独，长时间无人理睬容易引发严重心理抑郁。"
+      },
+      {
+        name: "缅因猫",
+        latin: "Maine Coon",
+        size: 3, shedding: 3, cling: 2, energy: 2, vocal: 2, alone: 2, care: 3,
+        tags: ["温柔巨人", "威严狮鬃毛", "喜欢玩水", "巨型拥抱感"],
+        reason: "体长可达 1 米以上的巨型猫。尽管外表威风凛凛如丛林野兽，内心却是个甜美温和的‘大男孩’，对人类与小孩极其宽容友善，呼噜声低沉有安全感。",
+        care: "长被毛防水且浓密，需每日梳毛防打结；需搭配特大号猫砂盆、重型加粗猫爬架以及充足的优质蛋白质饮食。",
+        warning: "体格大带来的是排泄量巨大、食量大以及昂贵的大号消耗品成本；需筛查肥厚型心肌病（HCM）等遗传基因。"
+      },
+      {
+        name: "孟加拉豹猫",
+        latin: "Bengal",
+        size: 2, shedding: 2, cling: 2, energy: 3, vocal: 2, alone: 2, care: 1,
+        tags: ["野性豹纹", "精力永动机", "爱玩水爱攀爬", "肌肉爆发力"],
+        reason: "拥有野性华丽的金色玫瑰斑纹，皮毛光滑如同绸缎闪烁金光。身体机能爆棚，好奇心极其强烈，甚至热爱洗澡玩水，适合追求动感与活力的家庭。",
+        care: "被毛短且密，极少打结，打理极度轻松；但必须在家中布置高纵深猫爬架或猫跑轮。",
+        warning: "运动量巨大！如果你只想安静瘫在沙发上，它可能会在半夜飞檐走壁或者开门拆抽屉。绝不适合长期关在狭小无丰容的房间内。"
+      },
+      {
+        name: "异国短毛猫 (加菲猫)",
+        latin: "Exotic Shorthair",
+        size: 2, shedding: 2, cling: 2, energy: 1, vocal: 1, alone: 2, care: 3,
+        tags: ["扁脸包子", "与世无争", "超级低能耗", "安静软萌"],
+        reason: "短毛版的波斯猫。性格极其温良与世无争，声线微弱如蚊，动作缓慢憨厚。运动量极低，每天大部分时间都在安静小憩，完美适配小户型和喜静主人。",
+        care: "特殊平脸颅骨构造导致鼻泪管曲折，需要主人每天用湿巾擦拭眼角泪痕，保持面部干爽。",
+        warning: "由于属于短头颅品种，呼吸道较短，夏季极易中暑，不耐受剧烈运动；进食时容易弄脏脸部，需选择浅口猫碗。"
+      },
+      {
+        name: "西伯利亚森林猫",
+        latin: "Siberian Forest Cat",
+        size: 3, shedding: 3, cling: 2, energy: 2, vocal: 1, alone: 2, care: 2,
+        tags: ["天然低敏体质", "耐寒大长毛", "亲切沉稳", "体魄强壮"],
+        reason: "虽然毛发丰厚华丽，但其唾液与皮屑中导致人类过敏的 Fel d 1 蛋白质浓度天然显著低于普通猫种，是许多轻中度过敏者圆梦‘大长毛’的理想选择。",
+        care: "三层被毛具有防水耐寒特质，春秋换毛期需深度梳理；性格沉稳包容，喜欢与家庭成员互动。",
+        warning: "成熟期极为漫长（需长达 3-5 年才完全定型），在幼年到青年期体毛蓬松度与体格增长持续进行，属于稀有品种，饲养繁育成本偏高。"
+      },
+      {
+        name: "俄罗斯蓝猫",
+        latin: "Russian Blue",
+        size: 2, shedding: 1, cling: 2, energy: 1, vocal: 1, alone: 3, care: 1,
+        tags: ["银蓝丝绒", "害羞优雅", "极度安静", "低皮屑体味"],
+        reason: "泛着银色光泽的蓝灰色双层短毛，搭配翠绿色眼睛，气质高雅内敛。极少吠叫，动作轻盈无声，对外界异动敏感，只对认定的主人展露无限深情。",
+        care: "双层密短毛极少脱落或打结，日常只需极少梳理即可保持丝绒质感。",
+        warning: "天性敏感内向，对陌生人或嘈杂吵闹的家庭环境容易产生应激与戒备，需要一个平和安宁的生活节奏。"
+      }
+    ];
+
+    // 应用交互状态
+    let currentStep = 0;
+    const userAnswers = {};
+
+    function startQuiz() {
+      document.getElementById('welcome-view').classList.add('hidden');
+      document.getElementById('progress-container').classList.remove('hidden');
+      document.getElementById('quiz-view').classList.remove('hidden');
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const q = questions[currentStep];
+      const total = questions.length;
+
+      // 更新进度与题目
+      document.getElementById('progress-bar').style.width = `${((currentStep + 1) / total) * 100}%`;
+      document.getElementById('step-indicator').innerText = `第 ${currentStep + 1} 题 / 共 ${total} 题`;
+      document.getElementById('question-title').innerText = q.title;
+      document.getElementById('question-desc').innerText = q.desc;
+
+      // 渲染选项
+      const optionsContainer = document.getElementById('options-container');
+      optionsContainer.innerHTML = '';
+
+      q.options.forEach((opt) => {
+        const isSelected = userAnswers[q.id] === opt.val;
+        const card = document.createElement('div');
+        card.className = `option-card ${isSelected ? 'selected' : ''}`;
+        card.onclick = () => selectOption(q.id, opt.val, card);
+
+        card.innerHTML = `
+          <input type="radio" name="${q.id}" ${isSelected ? 'checked' : ''} />
+          <div class="option-text">
+            <h4>${opt.label}</h4>
+            <p>${opt.desc}</p>
+          </div>
+        `;
+        optionsContainer.appendChild(card);
+      });
+
+      // 上下题按钮
+      const prevBtn = document.getElementById('prev-btn');
+      if (currentStep > 0) {
+        prevBtn.classList.remove('hidden');
+      } else {
+        prevBtn.classList.add('hidden');
+      }
+
+      const nextBtn = document.getElementById('next-btn');
+      nextBtn.innerText = (currentStep === total - 1) ? '查看匹配结果' : '下一题';
+    }
+
+    function selectOption(qid, val, element) {
+      userAnswers[qid] = val;
+      const allCards = document.querySelectorAll('.option-card');
+      allCards.forEach(c => c.classList.remove('selected'));
+      element.classList.add('selected');
+      const radio = element.querySelector('input[type="radio"]');
+      if (radio) radio.checked = true;
+    }
+
+    function prevQuestion() {
+      if (currentStep > 0) {
+        currentStep--;
+        renderQuestion();
+      }
+    }
+
+    function nextQuestion() {
+      const currentQId = questions[currentStep].id;
+      if (userAnswers[currentQId] === undefined) {
+        alert("请先选择一个最符合你生活习惯的选项。");
+        return;
+      }
+
+      if (currentStep < questions.length - 1) {
+        currentStep++;
+        renderQuestion();
+      } else {
+        calculateAndShowResult();
+      }
+    }
+
+    // 精细化多维惩罚匹配算法 (猫咪专属加权)
+    function calculateAndShowResult() {
+      const scoredBreeds = catBreedDatabase.map(breed => {
+        let penalty = 0;
+
+        // 1. 掉毛度与低敏惩罚 (最关键的生活断崖指标)
+        if (userAnswers.shedding_allergy === 1) {
+          // 用户极其严选无毛或低敏，强掉毛长毛猫重扣
+          if (breed.shedding === 3) penalty += 32;
+          else if (breed.shedding === 2) penalty += 16;
+        } else if (userAnswers.shedding_allergy === 3) {
+          // 用户极度喜欢长毛，如果匹配到无毛猫/超短毛则扣分
+          if (breed.shedding === 1) penalty += 18;
+        }
+
+        // 2. 黏人模式与情感需求冲突
+        const clingDiff = Math.abs(breed.cling - userAnswers.clinginess);
+        penalty += clingDiff * 10;
+        // 如果用户想要狗系黏人，但品种高冷独立
+        if (userAnswers.clinginess === 1 && breed.cling === 3) {
+          penalty += 12;
+        }
+
+        // 3. 活力跑酷与佛系躺平冲突
+        const energyDiff = Math.abs(breed.energy - userAnswers.activity_energy);
+        penalty += energyDiff * 9;
+        // 用户想佛系，猫是永动机 (如孟加拉/阿比西尼亚)
+        if (userAnswers.activity_energy === 1 && breed.energy === 3) {
+          penalty += 15;
+        }
+
+        // 4. 话痨程度与静音偏好
+        if (userAnswers.vocalization === 1 && breed.vocal >= 2) {
+          penalty += (breed.vocal - 1) * 12;
+        } else if (userAnswers.vocalization === 3 && breed.vocal === 1) {
+          penalty += 10; // 想要聊天机却匹配到完全静音猫
+        }
+
+        // 5. 独处时长与分离焦虑
+        if (userAnswers.alone_time === 3 && breed.alone === 1) {
+          // 长时间不在家，但猫极度依赖人易抑郁
+          penalty += 20;
+        } else if (userAnswers.alone_time === 1 && breed.alone === 3) {
+          penalty += 4;
+        }
+
+        // 6. 精细养护精力耐受
+        if (userAnswers.grooming_effort === 1 && breed.care === 3) {
+          // 用户想极简省心，但猫需要每天擦泪痕或洗澡擦油
+          penalty += 18;
+        }
+
+        // 7. 体型偏好
+        if (userAnswers.size_preference !== 0) {
+          if (breed.size !== userAnswers.size_preference) {
+            penalty += Math.abs(breed.size - userAnswers.size_preference) * 10;
+          }
+        }
+
+        // 综合百分比拟合 (封顶 98%，保底 45%)
+        let matchScore = Math.round(100 - penalty);
+        matchScore = Math.max(45, Math.min(98, matchScore));
+
+        return {
+          ...breed,
+          score: matchScore
+        };
+      });
+
+      // 降序排序输出
+      scoredBreeds.sort((a, b) => b.score - a.score);
+
+      const topBreed = scoredBreeds[0];
+      const runnerUps = scoredBreeds.slice(1, 3);
+
+      // 切换视图
+      document.getElementById('quiz-view').classList.add('hidden');
+      document.getElementById('progress-container').classList.add('hidden');
+      document.getElementById('result-view').style.display = 'block';
+
+      // 渲染第一名
+      document.getElementById('best-name').innerText = topBreed.name;
+      document.getElementById('best-latin').innerText = topBreed.latin;
+      document.getElementById('best-score').innerText = `${topBreed.score}% 契合度`;
+      document.getElementById('best-reason').innerText = topBreed.reason;
+      document.getElementById('best-care').innerText = topBreed.care;
+      document.getElementById('best-warning').innerHTML = `<strong>⚠️ 潜在注意与避坑提示：</strong>${topBreed.warning}`;
+
+      const tagsContainer = document.getElementById('best-tags');
+      tagsContainer.innerHTML = '';
+      topBreed.tags.forEach(t => {
+        const span = document.createElement('span');
+        span.className = 'tag';
+        span.innerText = t;
+        tagsContainer.appendChild(span);
+      });
+
+      // 渲染备选项 (第2、3名)
+      const runnersContainer = document.getElementById('runners-container');
+      runnersContainer.innerHTML = '';
+      runnerUps.forEach(r => {
+        const div = document.createElement('div');
+        div.className = 'runner-card';
+        div.innerHTML = `
+          <h5><span>${r.name}</span> <span class="runner-score">${r.score}% 契合</span></h5>
+          <p>${r.tags.join(' · ')}</p>
+          <p style="margin-top:6px; color:#4b5563;">${r.reason.substring(0, 56)}...</p>
+        `;
+        runnersContainer.appendChild(div);
+      });
+    }
+
+    function restartQuiz() {
+      currentStep = 0;
+      for (const k in userAnswers) delete userAnswers[k];
+      document.getElementById('result-view').style.display = 'none';
+      document.getElementById('welcome-view').classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
